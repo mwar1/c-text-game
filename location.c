@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <ctype.h>
 #include <string.h>
 #include "location.h"
 
@@ -22,7 +23,7 @@ void look(char *noun) {
 
 void go(char *noun) {
 	for (int i=0; i<numLocs; i++) {
-		if (!strcmp(noun, locs[i].tag)) {
+		if (!strcmp(noun, locs[i].tag) || isspace(noun) == 1) {
 			playerLocation = i;
 			printf("Moving to the %s...\n", locs[i].tag);
 			look("around");
