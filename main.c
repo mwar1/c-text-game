@@ -6,6 +6,6 @@
 char input[] = "look around";
 
 int main() {
-	while (getInput(input) && parse(input));
+	while (parse(input) && getInput(input));
 	printf("Thank you for playing.\n");
 }

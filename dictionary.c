@@ -1,15 +1,22 @@
 #include <string.h>
 #include <stdio.h>
+#include "dictionary.h"
 
-char *dictionary[3][3] = {{"look", "observe", NULL},
-			  {"go", "move", "travel"},
-			  {"quit", "exit", NULL}};
+char *dictionary[10][2] = {{"look", "observe"},
+			 {"go", "move"},
+			 {"quit", "exit"},
+			 {"n", "north"},
+			 {"e", "east"},
+			 {"w", "west"},
+			 {"s", "south"}};
 
 void getSynonyms(char **word) {
-	for (int i=0; i<3; i++) {
-		for (int j=0; j<3; j++) {
-			if (dictionary[i][j] != NULL && !strcmp(*word, dictionary[i][j])) {
-				*word = dictionary[i][0];
+	if (*word != NULL) {
+		for (int i=0; i<(sizeof(dictionary) / sizeof(dictionary[0])); i++) {
+			for (int j=0; j<2; j++) {
+				if (dictionary[i][j] != NULL && !strcmp(*word, dictionary[i][j])) {
+					*word = dictionary[i][0];
+				}
 			}
 		}
 	}

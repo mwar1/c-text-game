@@ -1,2 +1,2 @@
-extern char *dictionary[3][3];
+extern char *dictionary[10][2];
 void getSynonyms(char**);
