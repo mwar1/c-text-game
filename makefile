@@ -6,16 +6,16 @@ main: main.o parser.o input.o location.o dictionary.o
 main.o: main.c
 	gcc -c main.c
 
-parser.o: parser.c parser.h
+parser.o: parser.c
 	gcc -c parser.c
 
-input.o: input.c input.h
+input.o: input.c
 	gcc -c input.c
 
-location.o: location.c location.h
+location.o: location.c
 	gcc -c location.c
 
-dictionary.o: dictionary.c dictionary.h
+dictionary.o: dictionary.c
 	gcc -c dictionary.c
 
 clean:

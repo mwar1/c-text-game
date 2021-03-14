@@ -1,32 +1,61 @@
 #include <stdio.h>
-#include <ctype.h>
+#include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
 #include "location.h"
 
-typedef struct location {
+typedef struct Location {
 	char tag[20];
 	char description[128];
+	//struct Location *location;
 	int connections[4];
 	char directions[4];
-	int numConnections;
-} location;
-
-struct location locs[10] = {{"castle", "a grand, but run down castle", {1, 8, 9, -1}, {'s', 'n', 'w'}},
-		            {"bridge", "a rickety, old wooden bridge, swaying in the breeze", {0, 4, -1, -1}, {'n', 's'}},
-		            {"observatory", "a small stone hut, with a telescope poking out from a hole in the roof", {7, 8, -1, -1}, {'e', 'w'}},
-			    {"lake", "murky water stretching out to the horizon", {4, 6, -1, -1}, {'n', 'e'}},
-			    {"cave", "a dank cave, with water running down the walls. A strange light is coming from somewhere", {1, 3, 5, -1}, {'n', 's', 'e'}},
-			    {"forest", "dense trees surrounding you. A thick canopy blocks most of the daylight", {4, 6, -1, -1}, {'w', 's'}},
-			    {"boathouse", "a run-down wooden boathouse. The door is hanging off the hinges", {3, 5, -1, -1}, {'w', 'n'}},
-			    {"greenhouse", "a huge glass greenouse. The windows are covered in moss, casting a peculiar green light", {2, -1, -1, -1}, {'w'}},
-			    {"library", "a richly decorated old library, with thousands of ancient books lining the walls", {0, 2, -1, -1}, {'s', 'e'}},
-			    {"hall", "a long-forgotten feasting hall from times gone by. A long wooden table still stretches from end to end", {0, -1, -1, -1}, {'e'}}};
+} Location;
 
 int playerLocation = 0;
 int numLocs = 10;
-location currentLoc;
+Location currentLoc;
 int numConnections;
+
+Location locs[10];
+
+void generateLocations() {
+	FILE *locFile = fopen("locations.txt", "r");
+	for (int i=0; i<numLocs; i++) {
+		char *line = NULL;
+		size_t n;
+
+		char *tag;
+		char *description;
+		//struct Location *location;
+		int connections[4];
+		char directions[4];
+
+		getline(&line, &n, locFile);
+
+		tag = strtok(line, "/");
+		description = strtok(NULL, "/");
+		char *tempConns[] = {strtok(NULL, "/"), strtok(NULL, "/"), strtok(NULL, "/"), strtok(NULL, "/")};
+		for (int i=0; i<4; i++) {
+			char *tempP;
+			long ret;
+
+			ret = strtol(tempConns[i], &tempP, 10);
+			connections[i] = ret;
+		}
+
+		directions[0] = (char) *strtok(NULL, "/");
+		directions[1] = (char) *strtok(NULL, "/");
+		directions[2] = (char) *strtok(NULL, "/");
+		directions[3] = (char) *strtok(NULL, "\n");
+
+		strcpy(locs[i].tag, tag);
+		strcpy(locs[i].description, description);
+		memcpy(locs[i].connections, connections, 16);
+		strcpy(locs[i].directions, directions);
+	}
+	fclose(locFile);
+}
 
 void look(char *noun) {
 	bool looked = false;
@@ -60,11 +89,13 @@ void go(char *noun) {
 	numConnections = sizeof(currentLoc.connections) / sizeof(currentLoc.connections[0]);
 	currentLoc = locs[playerLocation];
 	for (int i=0; i<numConnections; i++) {
-		if (!strcmp(noun, locs[locs[playerLocation].connections[i]].tag) || (strlen(noun) == 1 && noun[0] == locs[playerLocation].directions[i])) {
-			playerLocation = locs[playerLocation].connections[i];
-			printf("Moving to the %s...\n", locs[playerLocation].tag);
-			look("around");
-			moved = true;
+		if (!moved) {
+			if (!strcmp(noun, locs[locs[playerLocation].connections[i]].tag) || (strlen(noun) == 1 && (int) noun[0] == locs[playerLocation].directions[i])) {
+				playerLocation = locs[playerLocation].connections[i];
+				printf("Moving to the %s...\n", locs[playerLocation].tag);
+				look("around");
+				moved = true;
+			}
 		}
 	}
 	if (!moved) {
