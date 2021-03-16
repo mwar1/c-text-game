@@ -12,30 +12,33 @@ char *noun;
 char *nounSyn;
 
 bool parse(char* input) {
-	verb = strtok(input, " \n");	
-	getSynonyms(&verb);
-	noun = strtok(NULL, " \n");
-	getSynonyms(&noun);
+	if (strcmp(input, "\n") && input[0] != 32) {
+		verb = strtok(input, " \n");	
+		getSynonyms(&verb);
+		noun = strtok(NULL, " \n");
+		getSynonyms(&noun);
 
-	if (!strcmp(verb, "quit")) {
-		return false;
-	}
-	
-	if (!strcmp(verb, "look")) {
-		if (noun == NULL) {
-			noun = "around";
+		if (!strcmp(verb, "quit")) {
+			return false;
 		}
-		look(noun);
-	} else if (!strcmp(verb, "go")) {
-		go(noun);
-	} else if (!strcmp(verb, "take")) {
-		take(noun);
-	} else if (!strcmp(verb, "drop")) {
-		drop(noun);
-	} else if (!strcmp(verb, "inventory")) {
-		inventory();
-	} else {
-		printf("I'm not sure how to%s.\n", verb);
+		
+		if (!strcmp(verb, "look")) {
+			if (noun == NULL || !strcmp(noun, "around")) {
+				lookAround();
+			} else {
+				look(noun);
+			}
+		} else if (!strcmp(verb, "go")) {
+			go(noun);
+		} else if (!strcmp(verb, "take")) {
+			take(noun);
+		} else if (!strcmp(verb, "drop")) {
+			drop(noun);
+		} else if (!strcmp(verb, "inventory")) {
+			inventory();
+		} else {
+			printf("I'm not sure how to %s.\n", verb);
+		}
 	}
 	return true;
 }

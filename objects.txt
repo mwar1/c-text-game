@@ -1,4 +1,4 @@
-sword/a bronze longsword, intricately engraved with otherwordly markings/castle
-gold/a bag of gold/bridge
-book/a leather bound book. It is written in a language which you don't understand/library
-oscar/it's an oscar/hall
+sword/a bronze longsword, intricately engraved with otherwordly markings/10/castle
+gold/a bag of gold/10/bridge
+book/a leather bound book. It is written in a language which you don't understand/10/library
+oscar/an oscar/10/hall

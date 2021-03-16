@@ -1,6 +1,5 @@
-struct Location;
 void generateLocations();
-void look(char*);
+void lookAround();
 void go(char*);
 void inventory();
 extern struct Location *locs[];
@@ -13,4 +12,5 @@ typedef struct Location {
 	char description[128];
 	int connections[4];
 	char directions[4];
+	int capacity;
 } Location;

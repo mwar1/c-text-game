@@ -4,7 +4,6 @@
 
 bool getInput(char *input) {
 	printf("\n>>> ");
-	scanf("%[^\n]", input);
-	getchar();
+	fgets(input, 32, stdin);
 	return true;
 }
