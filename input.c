@@ -3,7 +3,7 @@
 #include "input.h"
 
 bool getInput(char *input) {
-	printf(">>> ");
+	printf("\n>>> ");
 	scanf("%[^\n]", input);
 	getchar();
 	return true;

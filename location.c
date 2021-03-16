@@ -3,31 +3,27 @@
 #include <string.h>
 #include <stdbool.h>
 #include "location.h"
-
-typedef struct Location {
-	char tag[20];
-	char description[128];
-	//struct Location *location;
-	int connections[4];
-	char directions[4];
-} Location;
+#include "object.h"
 
 int playerLocation = 0;
 int numLocs = 10;
-Location currentLoc;
+Location *currentLoc;
 int numConnections;
 
-Location locs[10];
+Location *locs[10];
+Location player = {"player", "you", {-1, -1, -1, -1}, {'x', 'x', 'x', 'x'}};
+//struct Object *locObjs[3];
 
 void generateLocations() {
 	FILE *locFile = fopen("locations.txt", "r");
 	for (int i=0; i<numLocs; i++) {
+		locs[i] = malloc(sizeof(Location));
+
 		char *line = NULL;
 		size_t n;
 
 		char *tag;
 		char *description;
-		//struct Location *location;
 		int connections[4];
 		char directions[4];
 
@@ -49,10 +45,10 @@ void generateLocations() {
 		directions[2] = (char) *strtok(NULL, "/");
 		directions[3] = (char) *strtok(NULL, "\n");
 
-		strcpy(locs[i].tag, tag);
-		strcpy(locs[i].description, description);
-		memcpy(locs[i].connections, connections, 16);
-		strcpy(locs[i].directions, directions);
+		strcpy(locs[i]->tag, tag);
+		strcpy(locs[i]->description, description);
+		memcpy(locs[i]->connections, connections, sizeof(int)*4);
+		strcpy(locs[i]->directions, directions);
 	}
 	fclose(locFile);
 }
@@ -61,22 +57,33 @@ void look(char *noun) {
 	bool looked = false;
 	if (!strcmp(noun, "around")) {
 		currentLoc = locs[playerLocation];
-		numConnections = sizeof(currentLoc.connections) / sizeof(currentLoc.connections[0]);
-		printf("You are in %s.\n", currentLoc.description);
+		numConnections = sizeof(currentLoc->connections) / sizeof(currentLoc->connections[0]);
+		printf("You are %s.\n\n", currentLoc->description);
 		for (int i=0; i<numConnections; i++) {
-			if (currentLoc.connections[i] != -1) {
-				if (locs[playerLocation].directions[i] == 'n') {
+			if (currentLoc->connections[i] != -1) {
+				if (locs[playerLocation]->directions[i] == 'n') {
 					printf("To the north you can see a ");
-				} else if (locs[playerLocation].directions[i] == 'e') {
+				} else if (locs[playerLocation]->directions[i] == 'e') {
 					printf("To the east you can see a ");
-				} else if (locs[playerLocation].directions[i] == 's') {
+				} else if (locs[playerLocation]->directions[i] == 's') {
 					printf("To the south you can see a ");
 				} else {
 					printf("To the west you can see a ");
 				}
-				printf("%s\n", locs[currentLoc.connections[i]].tag);
+				printf("%s\n", locs[currentLoc->connections[i]]->tag);
 				looked = true;
 			}
+		}
+		printf("\nOn the floor there is:\n");
+		bool something = false;
+		for (int j=0; j<numObjs; j++) {
+			if (!strcmp(objs[j]->location->tag, currentLoc->tag)) {
+				something = true;
+				printf("a %s\n", objs[j]->tag);
+			}
+		}
+		if (!something) {
+			printf("nothing.\n");
 		}
 	}
 	if (!looked) {
@@ -86,13 +93,13 @@ void look(char *noun) {
 
 void go(char *noun) {
 	bool moved = false;
-	numConnections = sizeof(currentLoc.connections) / sizeof(currentLoc.connections[0]);
+	numConnections = sizeof(currentLoc->connections) / sizeof(currentLoc->connections[0]);
 	currentLoc = locs[playerLocation];
 	for (int i=0; i<numConnections; i++) {
 		if (!moved) {
-			if (!strcmp(noun, locs[locs[playerLocation].connections[i]].tag) || (strlen(noun) == 1 && (int) noun[0] == locs[playerLocation].directions[i])) {
-				playerLocation = locs[playerLocation].connections[i];
-				printf("Moving to the %s...\n", locs[playerLocation].tag);
+			if (!strcmp(noun, locs[locs[playerLocation]->connections[i]]->tag) || (strlen(noun) == 1 && (int) noun[0] == locs[playerLocation]->directions[i])) {
+				playerLocation = locs[playerLocation]->connections[i];
+				printf("Moving to the %s...\n", locs[playerLocation]->tag);
 				look("around");
 				moved = true;
 			}
@@ -100,5 +107,19 @@ void go(char *noun) {
 	}
 	if (!moved) {
 		printf("You can't move there at the moment.\n");
+	}
+}
+
+void inventory() {
+	bool holding = false;
+	printf("You are holding:\n");
+	for (int i=0; i<numObjs; i++) {
+		if (!strcmp(objs[i]->location->tag, "player")) {
+			holding = true;
+			printf("a %s\n", objs[i]->tag);
+		}
+	}
+	if (!holding) {
+		printf("nothing.\n");
 	}
 }

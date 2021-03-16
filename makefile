@@ -1,7 +1,7 @@
 all: main
 
-main: main.o parser.o input.o location.o dictionary.o
-	gcc main.o parser.o input.o location.o dictionary.o -o main
+main: main.o parser.o input.o location.o dictionary.o object.o
+	gcc main.o parser.o input.o location.o dictionary.o object.o -o main
 
 main.o: main.c
 	gcc -c main.c
@@ -17,6 +17,9 @@ location.o: location.c
 
 dictionary.o: dictionary.c
 	gcc -c dictionary.c
+
+object.o: object.c
+	gcc -c object.c
 
 clean:
 	rm -f *.o main

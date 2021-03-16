@@ -1,0 +1,4 @@
+sword/a bronze longsword, intricately engraved with otherwordly markings/castle
+gold/a bag of gold/bridge
+book/a leather bound book. It is written in a language which you don't understand/library
+oscar/it's an oscar/hall
