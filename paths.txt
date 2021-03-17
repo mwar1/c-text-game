@@ -1,0 +1,10 @@
+greenhouse/obsevatory/path
+observatory/library/forest
+library/castle/forest
+castle/hall/forest
+castle/bridge/forest
+bridge/cave/path
+cave/lake/cave
+lake/boathouse/path
+cave/forest/cave
+forest/boathouse/path

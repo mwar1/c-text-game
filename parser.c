@@ -20,9 +20,7 @@ bool parse(char* input) {
 
 		if (!strcmp(verb, "quit")) {
 			return false;
-		}
-		
-		if (!strcmp(verb, "look")) {
+		} else if (!strcmp(verb, "look")) {
 			if (noun == NULL || !strcmp(noun, "around")) {
 				lookAround();
 			} else {

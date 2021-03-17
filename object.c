@@ -64,7 +64,7 @@ void generateObjects() {
 void take(char *noun) {
 	bool taken = false;
 	for (int i=0; i<numObjs; i++) {
-		if (!strcmp(noun, objs[i]->tag) && !strcmp(objs[i]->location->tag, locs[playerLocation]->tag)) {
+		if (noun != NULL && !strcmp(noun, objs[i]->tag) && !strcmp(objs[i]->location->tag, locs[playerLocation]->tag)) {
 			int load = 0;
 			for (int j=0; j<numObjs; j++) {
 				if (!strcmp(objs[j]->location->tag, "player")) {
@@ -88,7 +88,7 @@ void take(char *noun) {
 void drop(char *noun) {
 	bool dropped = false;
 	for (int i=0; i<numObjs; i++) {
-		if (!strcmp(noun, objs[i]->tag) && !strcmp(objs[i]->location->tag, "player")) {
+		if (noun != NULL && !strcmp(noun, objs[i]->tag) && !strcmp(objs[i]->location->tag, "player")) {
 			dropped = true;
 			printf("Dropped %s\n", objs[i]->tag);
 			objs[i]->location = locs[playerLocation];
@@ -102,7 +102,7 @@ void drop(char *noun) {
 void look(char *noun) {
 	bool looked = false;
 	for (int i=0; i<numObjs; i++) {
-		if (!strcmp(noun, objs[i]->tag) && (!strcmp(objs[i]->location->tag, "player") || !strcmp(objs[i]->location->tag, locs[playerLocation]->tag))) {
+		if (noun != NULL && !strcmp(noun, objs[i]->tag) && (!strcmp(objs[i]->location->tag, "player") || !strcmp(objs[i]->location->tag, locs[playerLocation]->tag))) {
 			looked = true;
 			printf("It's %s\n", objs[i]->description);
 		}

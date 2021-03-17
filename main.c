@@ -5,7 +5,7 @@
 #include "object.h"
 #include "parser.h"
 
-char input[] = "look around";
+char input[48] = "look around";
 
 int main() {
 	generateLocations();

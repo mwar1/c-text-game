@@ -1,4 +1,5 @@
 void generateLocations();
+void generatePaths();
 void lookAround();
 void go(char*);
 void inventory();
@@ -9,6 +10,7 @@ extern int playerLocation;
 
 typedef struct Location {
 	char tag[16];
+	char intro[128];
 	char description[128];
 	int connections[4];
 	char directions[4];

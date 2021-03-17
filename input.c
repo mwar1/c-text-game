@@ -4,6 +4,6 @@
 
 bool getInput(char *input) {
 	printf("\n>>> ");
-	fgets(input, 32, stdin);
+	fgets(input, 48, stdin);
 	return true;
 }
