@@ -4,6 +4,7 @@
 #include "parser.h"
 #include "location.h"
 #include "object.h"
+#include "npc.h"
 #include "dictionary.h"
 
 char *verb;
@@ -20,6 +21,10 @@ bool parse(char* input) {
 
 		if (!strcmp(verb, "quit")) {
 			return false;
+		} else if (!strcmp(verb, "help")) {
+			printf("Type in any command to navigate the world, and hope that the parser knows how to handle it.\n");
+			printf("At the moment, commands should be in the form '<noun> <verb>', for example 'look book'.\n");
+			printf("This will be improved in a further update.\n");
 		} else if (!strcmp(verb, "look")) {
 			if (noun == NULL || !strcmp(noun, "around")) {
 				lookAround();
@@ -34,6 +39,8 @@ bool parse(char* input) {
 			drop(noun);
 		} else if (!strcmp(verb, "inventory")) {
 			inventory();
+		} else if (!strcmp(verb, "talk")) {
+			talk(noun);
 		} else {
 			printf("I'm not sure how to %s.\n", verb);
 		}

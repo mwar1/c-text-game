@@ -4,13 +4,14 @@
 #include <stdbool.h>
 #include "location.h"
 #include "object.h"
+#include "npc.h"
 
 int playerLocation = 0;
-int numLocs = 11;
+int numLocs = 20;
 int numConnections;
 
 Location *currentLoc;
-Location *locs[11];
+Location *locs[20];
 Location player = {"player", "something", "you", {-1, -1, -1, -1}, {'x', 'x', 'x', 'x'}, 30};
 
 void generateLocations() {
@@ -83,15 +84,21 @@ void lookAround() {
 	}
 	
 	printf("\nOn the floor there is:\n");
-	bool something = false;
+	bool isObject = false;
 	for (int j=0; j<numObjs; j++) {
 		if (!strcmp(objs[j]->location->tag, currentLoc->tag)) {
-			something = true;
+			isObject = true;
 			printf("a %s\n", objs[j]->tag);
 		}
 	}
-	if (!something) {
+	if (!isObject) {
 		printf("nothing.\n");
+	}
+
+	for (int k=0; k<numNPCs; k++) {
+		if (!strcmp(npcs[k]->location->tag, currentLoc->tag)) {
+			printf("\nYou can also see %s.\n", npcs[k]->super->description);
+		}
 	}
 }
 
@@ -109,18 +116,18 @@ void go(char *noun) {
 			if (!moved) {
 				if ((strlen(noun) == 1 && (int) noun[0] == locs[playerLocation]->directions[i])) {
 					playerLocation = locs[playerLocation]->connections[i];
-					printf("Moving to the %s...\n", locs[playerLocation]->tag);
 					lookAround();
-					moved = true;
-				} else if (strlen(noun) == 1 && ((int) noun[0] == 'n' || (int) noun[0] == 'e' || (int) noun[0] == 's' || (int) noun[0] == 'w')) {
-					printf("You can't move in that direction.\n");
 					moved = true;
 				}
 			}
 		}
 	}
 	if (!moved) {
-		printf("I don't know how to move in that direction.\n");
+		if  (strlen(noun) == 1 && ((int) noun[0] == 'n' || (int) noun[0] == 'e' || (int) noun[0] == 's' || (int) noun[0] == 'w')) {
+			printf("You can't move in that direction at the moment.\n");
+		} else { 
+			printf("I don't know how to move in that direction.\n");
+		}
 	}
 }
 

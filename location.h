@@ -1,3 +1,6 @@
+#ifndef LOCATION_H
+#define LOCATION_H
+
 void generateLocations();
 void generatePaths();
 void lookAround();
@@ -16,3 +19,5 @@ typedef struct Location {
 	char directions[4];
 	int capacity;
 } Location;
+
+#endif

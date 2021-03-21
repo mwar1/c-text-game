@@ -1,3 +1,6 @@
+#ifndef OBJECT_H
+#define OBJECT_H
+
 void generateObjects();
 void take(char*);
 void drop(char*);
@@ -12,3 +15,5 @@ typedef struct Object {
 	int weight;
 	struct Location *location;
 } Object;
+
+#endif

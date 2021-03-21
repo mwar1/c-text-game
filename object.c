@@ -5,8 +5,8 @@
 #include "location.h"
 #include "object.h"
 
-Object *objs[4];
-int numObjs = 4;
+Object *objs[8];
+int numObjs = 8;
 
 FILE *objFile;
 FILE *locsFile;
@@ -15,11 +15,11 @@ void generateObjects() {
 	objFile = fopen("objects.txt", "r");
 	locsFile = fopen("locations.txt", "r");
 
-	char tempTag[20];
+	char tempTag[16];
 	char *locLine = NULL;
 	size_t m;
 
-	char tags[numLocs][20];
+	char tags[numLocs][16];
 	for (int j=0; j<numLocs; j++) {
 		getline(&locLine, &m, locsFile);	
 		strcpy(tempTag, strtok(locLine, "/"));
@@ -40,6 +40,7 @@ void generateObjects() {
 		int locIndex;
 
 		getline(&line, &n, objFile);
+		
 		tag = strtok(line, "/");
 		description = strtok(NULL, "/");
 		weight = strtok(NULL, "/");

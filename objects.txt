@@ -1,4 +1,8 @@
 sword/a bronze longsword, intricately engraved with otherwordly markings/10/castle
-gold/a bag of gold/10/bridge
+coin/a small gold coin/10/bridge
 book/a leather bound book. It is written in a language which you don't understand/10/library
 oscar/an oscar/10/hall
+dagger/a small, rusty dagger with a sharp blade/10/path9
+coin/a dirty, silver coin/10/greenhouse
+bottle/an empty glass bottle/10/path7
+bag/a crumpled brown paper bag/10/path2

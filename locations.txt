@@ -1,11 +1,20 @@
-castle/a rugged castle towers over the surroundings/in a grand, but run down castle/10/8/9/-1/s/n/w/x
-bridge/a bridge sways in the breeze/on a rickety, old wooden bridge, swaying in the breeze/10/4/-1/-1/n/s/x/x
-observatory/you can see a small observatory/in a small stone hut, with a telescope poking out from a hole in the roof/7/8/-1/-1/e/w/x/x
-lake/there is a vast lake/on the bank of a great expanse of murky water, stretching out to the horizon/4/6/-1/-1/n/e/x/x
-cave/you can see the entrance to a foreboding-looking cave/in a dank cave, with water running down the walls. A strange light is coming from somewhere/1/3/5/-1/n/s/e/x
-forest/dense trees mark the start of a great forest/amongst tightly packed silver birches. A thick canopy of leaves blocks most of the daylight/4/6/-1/-1/w/s/x/x
-boathouse/you see a run-down boathouse, in need of a coat of paint/in a run-down wooden boathouse. The door is hanging off the hinges/3/5/-1/-1/w/n/x/x
-greenhouse/you can see the green windows of an abandoned greenhouse/in a huge glass greenhouse. The windows are covered in moss, casting a peculiar green light/2/-1/-1/-1/w/x/x/x
-library/there is a beautiful, old library/in a richly decorated old library, with thousands of ancient books lining the walls/0/2/-1/-1/s/e/x/x
-hall/you can see the entrance to the great hall of the castle/in a long-forgotten feasting hall from times gone by. A long wooden table still stretches from end to end/0/-1/-1/-1/e/x/x/x
-path/a path leads through the forest/on an empty forest path/0/1/-1/-1/n/s/x/x
+castle/a rugged castle towers over the surroundings/in a grand, but run down castle/12/13/14/-1/n/w/s/x
+bridge/a bridge sways in the breeze/on a rickety, old wooden bridge, swaying in the breeze/14/15/-1/-1/n/s/x/x
+observatory/you can see a small observatory/in a small stone hut, with a telescope poking out from a hole in the roof/10/11/-1/-1/e/w/x/x
+lake/there is a vast lake/on the bank of a great expanse of murky water, stretching out to the horizon/18/19/-1/-1/e/n/x/x
+cave/you can see the entrance to a foreboding-looking cave/in a dank cave, with water running down the walls. A strange light is coming from somewhere/15/16/19/-1/n/e/s/x
+forest/dense trees mark the start of a great forest/amongst tightly packed silver birches. A thick canopy of leaves blocks most of the daylight/16/17/-1/-1/w/s/x/x
+boathouse/you see a run-down boathouse, in need of a coat of paint/in a run-down wooden boathouse. The door is hanging off the hinges/17/18/-1/-1/n/w/x/x
+greenhouse/you can see the green windows of an abandoned greenhouse/in a huge glass greenhouse. The windows are covered in moss, casting a peculiar green light/10/-1/-1/-1/w/x/x/x
+library/there is a beautiful, old library/in a richly decorated old library, with thousands of ancient books lining the walls/11/12/-1/-1/e/s/x/x
+hall/you can see the entrance to the great hall of the castle/in a long-forgotten feasting hall from times gone by. A long wooden table still stretches from end to end/13/-1/-1/-1/w/x/x/x
+path1/a path leads through the forest/on an empty forest path/2/7/-1/-1/w/e/x/x
+path2/a path leads through the forest/on an empty forest path/2/8/-1/-1/e/w/x/x
+path3/a path leads through the forest/on an empty forest path/8/0/-1/-1/n/s/x/x
+path4/a path leads through the forest/on an empty forest path/9/0/-1/-1/w/e/x/x
+path5/a path leads through the forest/on an empty forest path/0/1/-1/-1/n/s/x/x
+path6/a path leads through the forest/on an empty forest path/1/4/-1/-1/n/s/x/x
+path7/a path leads through the forest/on an empty forest path/4/5/-1/-1/w/e/x/x
+path8/a path leads through the forest/on an empty forest path/5/6/-1/-1/n/s/x/x
+path9/a path leads through the forest/on an empty forest path/3/6/-1/-1/e/w/x/x
+path10/a path leads through the forest/on an empty forest path/3/4/-1/-1/s/n/x/x
