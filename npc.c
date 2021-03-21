@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdbool.h>
 #include <stdlib.h>
 #include "npc.h"
 #include "location.h"
@@ -88,5 +89,35 @@ void generateNPCs() {
 }
 
 void talk(char *noun) {
-	printf("Conversation is had...\n");
+	bool talked = false;
+	if (noun != NULL) {
+		for (int i=0; i<numNPCs; i++) {
+			if (!strcmp(noun, npcs[i]->super->tag)) {
+				printf("talking....\n");
+				talked = true;
+			}
+		}
+		if (!talked) {
+			printf("The %s doesn't respond.\n", noun);
+		}
+	} else {
+		printf("You talk to yourself.\n");
+	}
+}
+
+void fight(char *noun) {
+	bool found = false;
+	if (noun != NULL) {
+		for (int i=0; i<numNPCs; i++) {
+			if (!strcmp(noun, npcs[i]->super->tag)) {
+				found = true;
+				printf("fighting and dat.\n");
+			}
+		}
+		if (!found) {
+			printf("I can't see a %s nearby.\n", noun);
+		}
+	} else {
+		printf("You start attacking the air. Nothing happens...\n");
+	}
 }

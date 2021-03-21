@@ -5,6 +5,7 @@
 
 void generateNPCs();
 void talk(char*);
+void fight(char*);
 extern struct NPC *npcs[];
 extern int numNPCs;
 

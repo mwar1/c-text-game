@@ -10,7 +10,8 @@ char *dictionary[10][2] = {{"look", "observe"},
 			 {"w", "west"},
 			 {"s", "south"},
 			 {"inventory", "i"},
-			 {"look", "examine"}};
+			 {"look", "examine"},
+			 {"fight", "kill"}};
 
 void getSynonyms(char **word) {
 	if (*word != NULL) {

@@ -41,6 +41,8 @@ bool parse(char* input) {
 			inventory();
 		} else if (!strcmp(verb, "talk")) {
 			talk(noun);
+		} else if (!strcmp(verb, "fight")) {
+			fight(noun);
 		} else {
 			printf("I'm not sure how to %s.\n", verb);
 		}
