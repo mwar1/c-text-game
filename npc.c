@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include "npc.h"
+#include "object.h"
 #include "location.h"
 
 int numNPCs = 3;
@@ -36,6 +37,7 @@ void generateNPCs() {
 		char *tag;
 		char *intro;
 		char *description;
+		char *voiceline;
 		int connections[4];
 		char directions[4];
 		char *capacity;
@@ -48,6 +50,7 @@ void generateNPCs() {
 		tag = strtok(line, "/");
 		intro = strtok(NULL, "/");
 		description = strtok(NULL, "/");
+		voiceline = strtok(NULL, "/");
 		char *tempConns[] = {strtok(NULL, "/"), strtok(NULL, "/"), strtok(NULL, "/"), strtok(NULL, "/")};
 		for (int i=0; i<4; i++) {
 			char *tempP;
@@ -78,6 +81,7 @@ void generateNPCs() {
 		strcpy(npcs[i]->super->tag, tag);
 		strcpy(npcs[i]->super->intro, intro);
 		strcpy(npcs[i]->super->description, description);
+		strcpy(npcs[i]->voiceline, voiceline);
 		memcpy(npcs[i]->super->connections, connections, sizeof(int)*4);
 		strcpy(npcs[i]->super->directions, directions);
 		npcs[i]->super->capacity = intCapacity;
@@ -93,7 +97,7 @@ void talk(char *noun) {
 	if (noun != NULL) {
 		for (int i=0; i<numNPCs; i++) {
 			if (!strcmp(noun, npcs[i]->super->tag)) {
-				printf("talking....\n");
+				printf("%s\n", npcs[i]->voiceline);
 				talked = true;
 			}
 		}
@@ -111,7 +115,30 @@ void fight(char *noun) {
 		for (int i=0; i<numNPCs; i++) {
 			if (!strcmp(noun, npcs[i]->super->tag)) {
 				found = true;
-				printf("fighting and dat.\n");
+				char weapon[16];
+				bool gotWeapon = false;
+
+				printf("with what?\n\n>>> ");
+				fgets(weapon, 48, stdin);
+				weapon[strlen(weapon)-1] = '\0';
+
+				for (int j=0; j<numObjs; j++) {
+					if (!strcmp(weapon, objs[j]->tag) && !gotWeapon) {
+						if (!strcmp(objs[j]->location->tag, "player")) {
+							gotWeapon = true;
+							if (objs[j]->damage == 0) {
+								printf("You hit the %s with the %s.\nIt doesn't do much damage.\n", npcs[i]->super->tag, objs[j]->tag);
+							} else {
+								printf("You attack the %s with the %s.\nIt does %i damage.\n", npcs[i]->super->tag, objs[j]->tag, objs[j]->damage);
+							}
+						} else {
+							printf("You're not holding a %s.\n", weapon);
+						}
+					}
+				}
+				if (!gotWeapon) {
+					printf("use fists\n");
+				}
 			}
 		}
 		if (!found) {

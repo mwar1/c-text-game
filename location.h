@@ -2,12 +2,12 @@
 #define LOCATION_H
 
 void generateLocations();
-void generatePaths();
+void createPlayer();
 void lookAround();
 void go(char*);
 void inventory();
 extern struct Location *locs[];
-extern struct Location player;
+extern struct NPC *player;
 extern int numLocs;
 extern int playerLocation;
 

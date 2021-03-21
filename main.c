@@ -6,10 +6,11 @@
 #include "npc.h"
 #include "parser.h"
 
-char input[48] = "look around";
+char input[32] = "look around";
 
 int main() {
 	generateLocations();
+	createPlayer();
 	generateObjects();
 	generateNPCs();
 	while (parse(input) && getInput(input));

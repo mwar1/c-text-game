@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include "location.h"
 #include "object.h"
+#include "npc.h"
 
 Object *objs[8];
 int numObjs = 8;
@@ -36,6 +37,7 @@ void generateObjects() {
 		char *tag;
 		char *description;
 		char *weight;
+		char *damage;
 		char *locTag;
 		int locIndex;
 
@@ -45,6 +47,8 @@ void generateObjects() {
 		description = strtok(NULL, "/");
 		weight = strtok(NULL, "/");
 		int intWeight = atoi(weight);
+		damage = strtok(NULL, "/");
+		int intDamage = atoi(damage);
 		locTag = strtok(NULL, "/\n");
 
 		for (int j=0; j<numLocs; j++) {
@@ -57,6 +61,7 @@ void generateObjects() {
 		strcpy(objs[i]->tag, tag);
 		strcpy(objs[i]->description, description);
 		objs[i]->weight = intWeight;
+		objs[i]->damage = intDamage;
 		objs[i]->location = locs[locIndex];
 	}
 	fclose(objFile);
@@ -65,17 +70,17 @@ void generateObjects() {
 void take(char *noun) {
 	bool taken = false;
 	for (int i=0; i<numObjs; i++) {
-		if (noun != NULL && !strcmp(noun, objs[i]->tag) && !strcmp(objs[i]->location->tag, locs[playerLocation]->tag)) {
+		if (noun != NULL && !strcmp(noun, objs[i]->tag) && !strcmp(objs[i]->location->tag, player->location->tag)) {
 			int load = 0;
 			for (int j=0; j<numObjs; j++) {
 				if (!strcmp(objs[j]->location->tag, "player")) {
 					load += objs[j]->weight;
 				}
 			}
-			if ((load + objs[i]->weight) <= player.capacity) {
+			if ((load + objs[i]->weight) <= player->super->capacity) {
 				taken = true;
 				printf("%s added to inventory.\n", objs[i]->tag);
-				objs[i]->location = &player;
+				objs[i]->location = player->super;
 			} else {
 				printf("You're carrying too much already.\n");
 			}
@@ -92,7 +97,7 @@ void drop(char *noun) {
 		if (noun != NULL && !strcmp(noun, objs[i]->tag) && !strcmp(objs[i]->location->tag, "player")) {
 			dropped = true;
 			printf("Dropped %s\n", objs[i]->tag);
-			objs[i]->location = locs[playerLocation];
+			objs[i]->location = player->location;
 		}
 	}
 	if (!dropped) {
@@ -103,7 +108,7 @@ void drop(char *noun) {
 void look(char *noun) {
 	bool looked = false;
 	for (int i=0; i<numObjs; i++) {
-		if (noun != NULL && !strcmp(noun, objs[i]->tag) && (!strcmp(objs[i]->location->tag, "player") || !strcmp(objs[i]->location->tag, locs[playerLocation]->tag))) {
+		if (noun != NULL && !strcmp(noun, objs[i]->tag) && (!strcmp(objs[i]->location->tag, "player") || !strcmp(objs[i]->location->tag, player->location->tag))) {
 			looked = true;
 			printf("It's %s\n", objs[i]->description);
 		}

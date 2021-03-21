@@ -12,6 +12,7 @@ extern int numNPCs;
 typedef struct NPC {
 	Location *super;
 	Location *location;
+	char voiceline[80];
 	int health;
 } NPC;
 

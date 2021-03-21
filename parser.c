@@ -1,4 +1,5 @@
 #include <stdbool.h>
+#include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
 #include "parser.h"
@@ -43,6 +44,8 @@ bool parse(char* input) {
 			talk(noun);
 		} else if (!strcmp(verb, "fight")) {
 			fight(noun);
+		} else if (!strcmp(verb, "clear")) {
+			system("clear");
 		} else {
 			printf("I'm not sure how to %s.\n", verb);
 		}

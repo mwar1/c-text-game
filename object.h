@@ -13,6 +13,7 @@ typedef struct Object {
 	char tag[16];
 	char description[128];
 	int weight;
+	int damage;
 	struct Location *location;
 } Object;
 

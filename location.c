@@ -10,9 +10,8 @@ int playerLocation = 0;
 int numLocs = 20;
 int numConnections;
 
-Location *currentLoc;
 Location *locs[20];
-Location player = {"player", "something", "you", {-1, -1, -1, -1}, {'x', 'x', 'x', 'x'}, 30};
+NPC *player;
 
 void generateLocations() {
 	FILE *locFile = fopen("locations.txt", "r");
@@ -57,36 +56,51 @@ void generateLocations() {
 	fclose(locFile);
 }
 
+void createPlayer() {
+	player = malloc(sizeof(NPC));
+	player->super = malloc(sizeof(Location));
+	int tempConns[4] = {-1, -1, -1, -1};
+	char tempDirs[4] = {'x', 'x', 'x', 'x'};
+
+	strcpy(player->super->tag, "player");
+	strcpy(player->super->intro, "you");
+	strcpy(player->super->description, "you");
+	memcpy(player->super->connections, tempConns, sizeof(int)*4);
+	strcpy(player->super->directions, tempDirs);
+	player->super->capacity = 30;
+
+	player->location = locs[0];
+	strcpy(player->voiceline, ".");
+	player->health = 50;
+}
+
 void lookAround() {
-	currentLoc = locs[playerLocation];
 	numConnections = 0;
 	for (int i=0; i<4; i++) {
-		if (currentLoc->connections[i] != -1) {
+		if (player->location->connections[i] != -1) {
 			numConnections += 1;
 		}
 	}
-	printf("You are %s.\n\n", currentLoc->description);
+	printf("You are %s.\n\n", player->location->description);
 	for (int i=0; i<numConnections; i++) {
-		if (currentLoc->connections[i] != -1) {
-			if (strcmp(currentLoc->intro, "empty")) {
-				if (locs[playerLocation]->directions[i] == 'n') {
-					printf("To the north ");
-				} else if (locs[playerLocation]->directions[i] == 'e') {
-					printf("To the east ");
-				} else if (locs[playerLocation]->directions[i] == 's') {
-					printf("To the south ");
-				} else {
-					printf("To the west ");
-				}
-				printf("%s\n", locs[currentLoc->connections[i]]->intro);
+		if (player->location->connections[i] != -1) {
+			if (player->location->directions[i] == 'n') {
+				printf("To the north ");
+			} else if (player->location->directions[i] == 'e') {
+				printf("To the east ");
+			} else if (player->location->directions[i] == 's') {
+				printf("To the south ");
+			} else {
+				printf("To the west ");
 			}
+			printf("%s\n", locs[player->location->connections[i]]->intro);
 		}
 	}
 	
 	printf("\nOn the floor there is:\n");
 	bool isObject = false;
 	for (int j=0; j<numObjs; j++) {
-		if (!strcmp(objs[j]->location->tag, currentLoc->tag)) {
+		if (!strcmp(objs[j]->location->tag, player->location->tag)) {
 			isObject = true;
 			printf("a %s\n", objs[j]->tag);
 		}
@@ -96,7 +110,7 @@ void lookAround() {
 	}
 
 	for (int k=0; k<numNPCs; k++) {
-		if (!strcmp(npcs[k]->location->tag, currentLoc->tag)) {
+		if (!strcmp(npcs[k]->location->tag, player->location->tag)) {
 			printf("\nYou can also see %s.\n", npcs[k]->super->description);
 		}
 	}
@@ -105,25 +119,16 @@ void lookAround() {
 void go(char *noun) {
 	bool moved = false;
 	if (noun != NULL) {
-		currentLoc = locs[playerLocation];
-		numConnections = 0;
 		for (int i=0; i<4; i++) {
-			if (currentLoc->connections[i] != -1) {
-				numConnections += 1;
-			}
-		}
-		for (int i=0; i<numConnections; i++) {
-			if (!moved) {
-				if ((strlen(noun) == 1 && (int) noun[0] == locs[playerLocation]->directions[i])) {
-					playerLocation = locs[playerLocation]->connections[i];
-					lookAround();
-					moved = true;
-				}
+			if (!moved && player->location->connections[i] != -1 && (strlen(noun) == 1 && (int) noun[0] == player->location->directions[i])) {
+				player->location = locs[player->location->connections[i]];
+				lookAround();
+				moved = true;
 			}
 		}
 	}
 	if (!moved) {
-		if  (strlen(noun) == 1 && ((int) noun[0] == 'n' || (int) noun[0] == 'e' || (int) noun[0] == 's' || (int) noun[0] == 'w')) {
+		if (strlen(noun) == 1 && ((int) noun[0] == 'n' || (int) noun[0] == 'e' || (int) noun[0] == 's' || (int) noun[0] == 'w')) {
 			printf("You can't move in that direction at the moment.\n");
 		} else { 
 			printf("I don't know how to move in that direction.\n");
