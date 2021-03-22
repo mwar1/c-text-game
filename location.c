@@ -100,7 +100,8 @@ void lookAround() {
 	printf("\nOn the floor there is:\n");
 	bool isObject = false;
 	for (int j=0; j<numObjs; j++) {
-		if (!strcmp(objs[j]->location->tag, player->location->tag)) {
+		//printf("objs[i] : %s\nobjs[i] loc: %s\nplayer loc : %s\n\n", objs[j]->tag, objs[j]->location->tag, player->location->tag);
+		if (objs[j]->location != NULL && !strcmp(objs[j]->location->tag, player->location->tag)) {
 			isObject = true;
 			printf("a %s\n", objs[j]->tag);
 		}
@@ -111,7 +112,11 @@ void lookAround() {
 
 	for (int k=0; k<numNPCs; k++) {
 		if (!strcmp(npcs[k]->location->tag, player->location->tag)) {
-			printf("\nYou can also see %s.\n", npcs[k]->super->description);
+			if (npcs[k]->alive) {
+				printf("\nYou can also see %s.\n", npcs[k]->super->description);
+			} else {
+				printf("\nThe body of a %s lies on the floor.\n", npcs[k]->super->tag);
+			}
 		}
 	}
 }
@@ -126,13 +131,15 @@ void go(char *noun) {
 				moved = true;
 			}
 		}
-	}
-	if (!moved) {
-		if (strlen(noun) == 1 && ((int) noun[0] == 'n' || (int) noun[0] == 'e' || (int) noun[0] == 's' || (int) noun[0] == 'w')) {
-			printf("You can't move in that direction at the moment.\n");
-		} else { 
-			printf("I don't know how to move in that direction.\n");
+		if (!moved) {
+			if (strlen(noun) == 1 && ((int) noun[0] == 'n' || (int) noun[0] == 'e' || (int) noun[0] == 's' || (int) noun[0] == 'w')) {
+				printf("You can't move in that direction at the moment.\n");
+			} else { 
+				printf("I don't know how to move in that direction.\n");
+			}
 		}
+	} else {
+		printf("Please specify a direction to move in.\n");
 	}
 }
 
@@ -140,7 +147,7 @@ void inventory() {
 	bool holding = false;
 	printf("You are holding:\n");
 	for (int i=0; i<numObjs; i++) {
-		if (!strcmp(objs[i]->location->tag, "player")) {
+		if (objs[i]->location != NULL && !strcmp(objs[i]->location->tag, "player")) {
 			holding = true;
 			printf("a %s\n", objs[i]->tag);
 		}

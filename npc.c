@@ -87,6 +87,7 @@ void generateNPCs() {
 		npcs[i]->super->capacity = intCapacity;
 		npcs[i]->health = intHealth;
 		npcs[i]->location = locs[locIndex];
+		npcs[i]->alive = true;
 	}
 
 	fclose(npcFile);
@@ -96,10 +97,12 @@ void talk(char *noun) {
 	bool talked = false;
 	if (noun != NULL) {
 		for (int i=0; i<numNPCs; i++) {
-			if (!strcmp(noun, npcs[i]->super->tag)) {
-				printf("%s\n", npcs[i]->voiceline);
-				talked = true;
+			if (npcs[i]->alive && !strcmp(noun, npcs[i]->super->tag)) {
+				printf("\"%s\"\n", npcs[i]->voiceline);
+			} else if (!npcs[i]->alive) {
+				printf("Unfortunately the %s is dead, and so doesn't respond.\n", npcs[i]->super->tag);
 			}
+			talked = true;
 		}
 		if (!talked) {
 			printf("The %s doesn't respond.\n", noun);
@@ -111,15 +114,16 @@ void talk(char *noun) {
 
 void fight(char *noun) {
 	bool found = false;
+	bool attacked = false;
 	if (noun != NULL) {
 		for (int i=0; i<numNPCs; i++) {
-			if (!strcmp(noun, npcs[i]->super->tag)) {
+			if (npcs[i]->alive && !strcmp(noun, npcs[i]->super->tag) && !strcmp(npcs[i]->location->tag, player->location->tag)) {
 				found = true;
 				char weapon[16];
 				bool gotWeapon = false;
 
 				printf("with what?\n\n>>> ");
-				fgets(weapon, 48, stdin);
+				fgets(weapon, 16, stdin);
 				weapon[strlen(weapon)-1] = '\0';
 
 				for (int j=0; j<numObjs; j++) {
@@ -130,6 +134,8 @@ void fight(char *noun) {
 								printf("You hit the %s with the %s.\nIt doesn't do much damage.\n", npcs[i]->super->tag, objs[j]->tag);
 							} else {
 								printf("You attack the %s with the %s.\nIt does %i damage.\n", npcs[i]->super->tag, objs[j]->tag, objs[j]->damage);
+								npcs[i]->health -= objs[j]->damage;
+								attacked = true;
 							}
 						} else {
 							printf("You're not holding a %s.\n", weapon);
@@ -137,12 +143,37 @@ void fight(char *noun) {
 					}
 				}
 				if (!gotWeapon) {
-					printf("use fists\n");
+					char useFist[4];
+					if (!strcmp(weapon, "fists") || !strcmp(weapon, "fist") || !strcmp(weapon, "hands") || !strcmp(weapon, "hand")) {
+						strcpy(useFist, "y");
+					} else {
+						printf("You don't have a %s.\nUse your fists instead? (y/n)\n\n>>> ", weapon);
+						fgets(useFist, 4, stdin);
+						useFist[strlen(useFist)-1] = '\0';
+					}
+
+					if (!strcmp(useFist, "y")) {
+						printf("You hit the %s with your fists.\nIt does 5 damage.\n", npcs[i]->super->tag);
+						npcs[i]->health -= 5;
+						attacked = true;
+					}
+				}
+			} else if (!npcs[i]->alive && !strcmp(noun, npcs[i]->super->tag) && !strcmp(npcs[i]->location->tag, player->location->tag)) {
+				printf("The %s is dead.\nI don't think it would be wise to attack it anymore.\n", npcs[i]->super->tag);
+				found = true;
+			} else if (!strcmp(noun, npcs[i]->super->tag)) {
+				printf("There isn't a %s nearby.\n", noun);
+				found = true;
+			}
+			if (attacked) {
+				if (npcs[i]->health <= 0) {
+					npcs[i]->alive = false;
+					printf("The %s dies.\n", npcs[i]->super->tag);
 				}
 			}
 		}
 		if (!found) {
-			printf("I can't see a %s nearby.\n", noun);
+			printf("You attack the %s, nothing happens...\n", noun);
 		}
 	} else {
 		printf("You start attacking the air. Nothing happens...\n");

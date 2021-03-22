@@ -1,0 +1,6 @@
+1. Sort out full stops in descriptions
+2. Add attacks for NPCs
+2. Take dead NPC and eat???
+3. Improve passages (fake destinations etc.)
+3. Improve parser grammer
+3. Add extra stats for NPCs (buffs, dmg resist etc.)

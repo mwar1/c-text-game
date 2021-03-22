@@ -1,6 +1,7 @@
 #ifndef NPC_H
 #define NPC_H
 
+#include <stdbool.h>
 #include "location.h"
 
 void generateNPCs();
@@ -14,6 +15,7 @@ typedef struct NPC {
 	Location *location;
 	char voiceline[80];
 	int health;
+	bool alive;
 } NPC;
 
 #endif

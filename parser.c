@@ -44,6 +44,8 @@ bool parse(char* input) {
 			talk(noun);
 		} else if (!strcmp(verb, "fight")) {
 			fight(noun);
+		} else if (!strcmp(verb, "eat")) {
+			eat(noun);
 		} else if (!strcmp(verb, "clear")) {
 			system("clear");
 		} else {

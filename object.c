@@ -38,6 +38,7 @@ void generateObjects() {
 		char *description;
 		char *weight;
 		char *damage;
+		char *foodPoints;
 		char *locTag;
 		int locIndex;
 
@@ -49,6 +50,8 @@ void generateObjects() {
 		int intWeight = atoi(weight);
 		damage = strtok(NULL, "/");
 		int intDamage = atoi(damage);
+		foodPoints = strtok(NULL, "/");
+		int intFoodPoints = atoi(foodPoints);
 		locTag = strtok(NULL, "/\n");
 
 		for (int j=0; j<numLocs; j++) {
@@ -62,6 +65,7 @@ void generateObjects() {
 		strcpy(objs[i]->description, description);
 		objs[i]->weight = intWeight;
 		objs[i]->damage = intDamage;
+		objs[i]->foodPoints = intFoodPoints;
 		objs[i]->location = locs[locIndex];
 	}
 	fclose(objFile);
@@ -73,7 +77,7 @@ void take(char *noun) {
 		if (noun != NULL && !strcmp(noun, objs[i]->tag) && !strcmp(objs[i]->location->tag, player->location->tag)) {
 			int load = 0;
 			for (int j=0; j<numObjs; j++) {
-				if (!strcmp(objs[j]->location->tag, "player")) {
+				if (objs[j]->location != NULL && !strcmp(objs[j]->location->tag, "player")) {
 					load += objs[j]->weight;
 				}
 			}
@@ -94,7 +98,7 @@ void take(char *noun) {
 void drop(char *noun) {
 	bool dropped = false;
 	for (int i=0; i<numObjs; i++) {
-		if (noun != NULL && !strcmp(noun, objs[i]->tag) && !strcmp(objs[i]->location->tag, "player")) {
+		if (noun != NULL && objs[i]->location != NULL && !strcmp(noun, objs[i]->tag) && !strcmp(objs[i]->location->tag, "player")) {
 			dropped = true;
 			printf("Dropped %s\n", objs[i]->tag);
 			objs[i]->location = player->location;
@@ -108,12 +112,42 @@ void drop(char *noun) {
 void look(char *noun) {
 	bool looked = false;
 	for (int i=0; i<numObjs; i++) {
-		if (noun != NULL && !strcmp(noun, objs[i]->tag) && (!strcmp(objs[i]->location->tag, "player") || !strcmp(objs[i]->location->tag, player->location->tag))) {
+		if (noun != NULL && objs[i]->location != NULL && !strcmp(noun, objs[i]->tag) && (!strcmp(objs[i]->location->tag, "player") || !strcmp(objs[i]->location->tag, player->location->tag))) {
 			looked = true;
 			printf("It's %s\n", objs[i]->description);
 		}
 	}
 	if (!looked) {
 		printf("I can't see a %s nearby.\n", noun);
+	}
+}
+
+void eat(char *noun) {
+	bool eaten = false;
+	bool found = false;
+	for (int i=0; i<numObjs; i++) {
+		if (noun != NULL && !eaten) {
+			if (!strcmp(noun, objs[i]->tag) && !strcmp(objs[i]->location->tag, "player")) {
+				if (objs[i]->foodPoints != 0) {
+					printf("Eating the %s...\n", objs[i]->tag);
+					if (objs[i]->foodPoints > 0) {
+						printf("You gain %i HP.\n", objs[i]->foodPoints);
+					} else {
+						printf("You lose %i HP.\n", objs[i]->foodPoints);
+					}
+					player->health += objs[i]->foodPoints;
+					objs[i]->location = NULL;
+					eaten = true;
+				} else {
+					printf("I wouldn't advise eating that.\n");
+					found = true;
+				}
+			}
+		}
+	}
+	if (!eaten && !found && noun != NULL) {
+		printf("You're not holding a %s.\n", noun);
+	} else if (!eaten && !found) {
+		printf("Please specify something to eat.\n");
 	}
 }
