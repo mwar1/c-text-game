@@ -12,6 +12,7 @@ extern int numLocs;
 extern int playerLocation;
 
 typedef struct Location {
+	char article[5];
 	char tag[16];
 	char intro[128];
 	char description[128];

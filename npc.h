@@ -6,7 +6,8 @@
 
 void generateNPCs();
 void talk(char*);
-void fight(char*);
+void playerAttack(char*);
+bool npcAttack();
 extern struct NPC *npcs[];
 extern int numNPCs;
 
@@ -15,6 +16,7 @@ typedef struct NPC {
 	Location *location;
 	char voiceline[80];
 	int health;
+	int aggression;
 	bool alive;
 } NPC;
 

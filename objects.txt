@@ -1,8 +1,10 @@
-sword/a bronze longsword, intricately engraved with otherwordly markings/10/100/0/castle
-coin/a small gold coin/10/0/0/bridge
-book/a leather bound book. It is written in a language which you don't understand/10/0/0/library
-burger/a very medieval-looking and slightly mouldy Big Mac/10/0/10/castle
-oscar/an oscar/10/0/50/hall
-dagger/a small, rusty dagger with a sharp blade/10/15/0/path9
-bottle/an empty glass bottle/10/2/0/path7
-bag/a crumpled brown paper bag/10/0/0/path2
+a/sword/bronze longsword, intricately engraved with otherwordly markings/10/20/0/castle
+a/coin/small gold coin/10/0/0/bridge
+a/book/leather bound book. It is written in a language which you don't understand/10/0/0/library
+a/burger/very medieval-looking and slightly mouldy Big Mac/10/0/10/hall
+an/oscar/oscar/10/0/50/castle
+a/dagger/small, rusty dagger with a sharp blade/10/15/0/path9
+a/bottle/empty glass bottle/10/2/0/path7
+a/bag/crumpled brown paper bag/10/0/0/path2
+an/axe/long, bronze-headed axe, stained red with blood/10/20/0/dwarf
+a/club/gnarled wooden club/10/15/0/orc

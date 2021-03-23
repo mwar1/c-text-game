@@ -10,9 +10,9 @@ char input[32] = "look around";
 
 int main() {
 	generateLocations();
+	generateNPCs();
 	createPlayer();
 	generateObjects();
-	generateNPCs();
 	while (parse(input) && getInput(input));
 	printf("Thank you for playing.\n");
 }

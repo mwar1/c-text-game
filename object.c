@@ -6,27 +6,39 @@
 #include "object.h"
 #include "npc.h"
 
-Object *objs[8];
-int numObjs = 8;
+Object *objs[10];
+int numObjs = 10;
 
 FILE *objFile;
 FILE *locsFile;
+FILE *npcFile;
 
 void generateObjects() {
 	objFile = fopen("objects.txt", "r");
 	locsFile = fopen("locations.txt", "r");
+	npcFile = fopen("npcs.txt", "r");
 
-	char tempTag[16];
 	char *locLine = NULL;
 	size_t m;
 
-	char tags[numLocs][16];
+	char locTags[numLocs][16];
 	for (int j=0; j<numLocs; j++) {
-		getline(&locLine, &m, locsFile);	
-		strcpy(tempTag, strtok(locLine, "/"));
-		strcpy(tags[j], tempTag);
+		getline(&locLine, &m, locsFile);
+		strtok(locLine, "/");
+		strcpy(locTags[j], strtok(NULL, "/"));
 	}
 	fclose(locsFile);
+
+	char *npcLine = NULL;
+	size_t x;
+
+	char npcTags[numNPCs][16];
+	for (int k=0; k<numNPCs; k++) {
+		getline(&npcLine, &x, npcFile);	
+		strtok(npcLine, "/");
+		strcpy(npcTags[k], strtok(NULL, "/"));
+	}
+	fclose(npcFile);
 
 	for (int i=0; i<numObjs; i++) {
 		objs[i] = malloc(sizeof(Object));
@@ -34,17 +46,19 @@ void generateObjects() {
 		char *line = NULL;
 		size_t n;
 
+		char *article;
 		char *tag;
 		char *description;
 		char *weight;
 		char *damage;
 		char *foodPoints;
 		char *locTag;
-		int locIndex;
+		int locIndex = -1;
 
 		getline(&line, &n, objFile);
 		
-		tag = strtok(line, "/");
+		article = strtok(line, "/");
+		tag = strtok(NULL, "/");
 		description = strtok(NULL, "/");
 		weight = strtok(NULL, "/");
 		int intWeight = atoi(weight);
@@ -55,18 +69,29 @@ void generateObjects() {
 		locTag = strtok(NULL, "/\n");
 
 		for (int j=0; j<numLocs; j++) {
-			if (!strcmp(tags[j], locTag)) {
+			if (!strcmp(locTags[j], locTag)) {
 				locIndex = j;
+				objs[i]->location = locs[locIndex];
 				break;
 			}
 		}
+
+		if (locIndex == -1) {
+			for (int j=0; j<numNPCs; j++) {
+				if (!strcmp(npcTags[j], locTag)) {
+					locIndex = j;
+					objs[i]->location = npcs[locIndex]->super;
+					break;
+				}
+			}
+		}
 		
+		strcpy(objs[i]->article, article);
 		strcpy(objs[i]->tag, tag);
 		strcpy(objs[i]->description, description);
 		objs[i]->weight = intWeight;
 		objs[i]->damage = intDamage;
 		objs[i]->foodPoints = intFoodPoints;
-		objs[i]->location = locs[locIndex];
 	}
 	fclose(objFile);
 }
@@ -91,7 +116,19 @@ void take(char *noun) {
 		}
 	}
 	if (!taken) {
-		printf("I can't see a %s nearby.\n", noun);
+		bool targetNPC = false;
+		for (int j=0; j<numNPCs; j++) {
+			if (!npcs[j]->alive && !strcmp(npcs[j]->location->tag, player->location->tag) && !strcmp(npcs[j]->super->tag, noun)) {
+				printf("You try to pick up the rotting corpse of the %s, but its too heavy.\n", npcs[j]->super->tag);
+				targetNPC = true;
+			} else if (!strcmp(npcs[j]->location->tag, player->location->tag) && !strcmp(npcs[j]->super->tag, noun)) {
+				printf("I don't think the %s would take too kindly to that.\n", npcs[j]->super->tag);
+				targetNPC = true;
+			}
+		}
+		if (!targetNPC) {
+			printf("I can't see a %s nearby.\n", noun);
+		}
 	}
 }
 
@@ -114,7 +151,7 @@ void look(char *noun) {
 	for (int i=0; i<numObjs; i++) {
 		if (noun != NULL && objs[i]->location != NULL && !strcmp(noun, objs[i]->tag) && (!strcmp(objs[i]->location->tag, "player") || !strcmp(objs[i]->location->tag, player->location->tag))) {
 			looked = true;
-			printf("It's %s\n", objs[i]->description);
+			printf("It's %s %s.\n", objs[i]->article, objs[i]->description);
 		}
 	}
 	if (!looked) {
@@ -146,8 +183,23 @@ void eat(char *noun) {
 		}
 	}
 	if (!eaten && !found && noun != NULL) {
-		printf("You're not holding a %s.\n", noun);
-	} else if (!eaten && !found) {
+		bool targetNPC = false;
+		for (int j=0; j<numNPCs; j++) {
+			if (!npcs[j]->alive && !strcmp(npcs[j]->location->tag, player->location->tag) && !strcmp(npcs[j]->super->tag, noun)) {
+				printf("Judging by the smell, I don't think you should do that.\n");
+				targetNPC = true;
+			} else if (!strcmp(npcs[j]->location->tag, player->location->tag) && !strcmp(npcs[j]->super->tag, noun)) {
+				printf("I don't think the %s would take too kindly to that.\n", npcs[j]->super->tag);
+				targetNPC = true;
+			} else if (!strcmp(npcs[j]->super->tag, noun)) {
+				printf("I can't see a %s nearby.\n", noun);
+				targetNPC = true;
+			}
+		}
+		if (!targetNPC) {
+			printf("You're not holding a %s.\n", noun);
+		}
+	} else if (noun == NULL) {
 		printf("Please specify something to eat.\n");
 	}
 }

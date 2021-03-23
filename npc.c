@@ -22,8 +22,8 @@ void generateNPCs() {
 	char tags[numLocs][16];
 	for (int j=0; j<numLocs; j++) {
 		getline(&locLine, &m, locsFile);
-		//printf("%s\n", locLine);	
-		strcpy(tags[j], strtok(locLine, "/"));
+		strtok(locLine, "/");
+		strcpy(tags[j], strtok(NULL, "/"));
 	}
 	fclose(locsFile);
 
@@ -34,6 +34,7 @@ void generateNPCs() {
 		char *line = NULL;
 		size_t n;
 
+		char *article;
 		char *tag;
 		char *intro;
 		char *description;
@@ -42,12 +43,14 @@ void generateNPCs() {
 		char directions[4];
 		char *capacity;
 		char *health;
+		char *aggression;
 		char *locTag;
 		int locIndex;
 
 		getline(&line, &n, npcFile);
 
-		tag = strtok(line, "/");
+		article = strtok(line, "/");
+		tag = strtok(NULL, "/");
 		intro = strtok(NULL, "/");
 		description = strtok(NULL, "/");
 		voiceline = strtok(NULL, "/");
@@ -68,6 +71,8 @@ void generateNPCs() {
 		int intCapacity = atoi(capacity);
 		health = strtok(NULL, "/");
 		int intHealth = atoi(health);
+		aggression = strtok(NULL, "/");
+		int intAggro = atoi(aggression);
 		locTag = strtok(NULL, "\n");
 		locTag[strlen(locTag)-1] = '\0';
 
@@ -78,6 +83,7 @@ void generateNPCs() {
 			}
 		}
 
+		strcpy(npcs[i]->super->article, article);
 		strcpy(npcs[i]->super->tag, tag);
 		strcpy(npcs[i]->super->intro, intro);
 		strcpy(npcs[i]->super->description, description);
@@ -87,6 +93,7 @@ void generateNPCs() {
 		npcs[i]->super->capacity = intCapacity;
 		npcs[i]->health = intHealth;
 		npcs[i]->location = locs[locIndex];
+		npcs[i]->aggression = intAggro;
 		npcs[i]->alive = true;
 	}
 
@@ -97,12 +104,16 @@ void talk(char *noun) {
 	bool talked = false;
 	if (noun != NULL) {
 		for (int i=0; i<numNPCs; i++) {
-			if (npcs[i]->alive && !strcmp(noun, npcs[i]->super->tag)) {
+			if (npcs[i]->alive && !strcmp(noun, npcs[i]->super->tag) && !strcmp(npcs[i]->location->tag, player->location->tag)) {
 				printf("\"%s\"\n", npcs[i]->voiceline);
+				talked = true;
 			} else if (!npcs[i]->alive) {
 				printf("Unfortunately the %s is dead, and so doesn't respond.\n", npcs[i]->super->tag);
+				talked = true;
+			} else if (strcmp(npcs[i]->location->tag, player->location->tag) && !strcmp(noun, npcs[i]->super->tag)) {
+				printf("I can't see a %s nearby.\n", noun);
+				talked = true;
 			}
-			talked = true;
 		}
 		if (!talked) {
 			printf("The %s doesn't respond.\n", noun);
@@ -112,7 +123,7 @@ void talk(char *noun) {
 	}
 }
 
-void fight(char *noun) {
+void playerAttack(char *noun) {
 	bool found = false;
 	bool attacked = false;
 	if (noun != NULL) {
@@ -135,10 +146,15 @@ void fight(char *noun) {
 							} else {
 								printf("You attack the %s with the %s.\nIt does %i damage.\n", npcs[i]->super->tag, objs[j]->tag, objs[j]->damage);
 								npcs[i]->health -= objs[j]->damage;
+								if (npcs[i]->aggression > 4) {
+									npcs[i]->aggression *= 2;
+								} else {
+									npcs[i]->aggression = 5;
+								}
 								attacked = true;
 							}
 						} else {
-							printf("You're not holding a %s.\n", weapon);
+							printf("You're not holding %s.\n", weapon);
 						}
 					}
 				}
@@ -155,6 +171,7 @@ void fight(char *noun) {
 					if (!strcmp(useFist, "y")) {
 						printf("You hit the %s with your fists.\nIt does 5 damage.\n", npcs[i]->super->tag);
 						npcs[i]->health -= 5;
+						npcs[i]->aggression++;
 						attacked = true;
 					}
 				}
@@ -168,7 +185,17 @@ void fight(char *noun) {
 			if (attacked) {
 				if (npcs[i]->health <= 0) {
 					npcs[i]->alive = false;
-					printf("The %s dies.\n", npcs[i]->super->tag);
+					bool hasWeapon = false;
+					for (int j=0; j<numObjs; j++) {
+						if (!strcmp(objs[j]->location->tag, npcs[i]->super->tag)) {
+							hasWeapon = true;
+							printf("The %s dies, dropping its %s to the ground.\n", npcs[i]->super->tag, objs[j]->tag);
+							objs[j]->location = player->location;
+						}
+					}
+					if (!hasWeapon) {
+						printf("The %s dies.\n", npcs[i]->super->tag);
+					}
 				}
 			}
 		}
@@ -178,4 +205,32 @@ void fight(char *noun) {
 	} else {
 		printf("You start attacking the air. Nothing happens...\n");
 	}
+}
+
+bool npcAttack() {
+	for (int i=0; i<numNPCs; i++) {
+		if (!strcmp(npcs[i]->location->tag, player->location->tag) && npcs[i]->alive) {
+			int seed = rand() % (11);  // Random number from 1 to 10
+			if (seed < npcs[i]->aggression) {
+				// Attack the player
+				bool hasWeapon = false; 
+				for (int j=0; j<numObjs; j++) {
+					if (!strcmp(objs[j]->location->tag, npcs[i]->super->tag) && objs[j]->damage != 0) {
+						printf("The %s attacks you with %s %s.\nYou take %i damage.\n", npcs[i]->super->tag, objs[j]->article, objs[j]->tag, objs[j]->damage);
+						player->health -= objs[j]->damage;
+						hasWeapon = true;
+					}
+				}
+				if (!hasWeapon) {
+						printf("The %s punches you, dealing 5 damage.\n", npcs[i]->super->tag);
+						player->health -= 5;
+				}
+			}
+		}
+	}
+	if (player->health <= 0) {
+		printf("\nWith a groan, you sink to the ground, too weak to carry on.\n\nYou die.\n\n");
+		return false;
+	}
+	return true;
 }

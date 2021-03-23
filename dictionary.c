@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include "dictionary.h"
 
-char *dictionary[][11] = {{"look", "observe", NULL},
+char *dictionary[][12] = {{"look", "observe", NULL},
 			 {"go", "move", "walk", "run", NULL},
 			 {"quit", "exit", "make", NULL},
 			 {"n", "north", NULL},
@@ -12,7 +12,8 @@ char *dictionary[][11] = {{"look", "observe", NULL},
 			 {"inventory", "i", NULL},
 			 {"look", "examine", "inspect", NULL},
 			 {"fight", "kill", "attack", NULL},
-			 {"help", "commands", "instructions", "rules", NULL}};
+			 {"help", "commands", "instructions", "rules", NULL},
+			 {"health", "hp", NULL}};
 
 void getSynonyms(char **word) {
 	if (*word != NULL) {

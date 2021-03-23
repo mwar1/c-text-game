@@ -21,6 +21,7 @@ void generateLocations() {
 		char *line = NULL;
 		size_t n;
 
+		char *article;
 		char *tag;
 		char *intro;
 		char *description;
@@ -29,7 +30,8 @@ void generateLocations() {
 
 		getline(&line, &n, locFile);
 
-		tag = strtok(line, "/");
+		article = strtok(line, "/");
+		tag = strtok(NULL, "/");
 		intro = strtok(NULL, "/");
 		description = strtok(NULL, "/");
 		char *tempConns[] = {strtok(NULL, "/"), strtok(NULL, "/"), strtok(NULL, "/"), strtok(NULL, "/")};
@@ -46,6 +48,7 @@ void generateLocations() {
 		directions[2] = (char) *strtok(NULL, "/");
 		directions[3] = (char) *strtok(NULL, "\n");
 
+		strcpy(locs[i]->article, article);
 		strcpy(locs[i]->tag, tag);
 		strcpy(locs[i]->intro, intro);
 		strcpy(locs[i]->description, description);
@@ -93,17 +96,16 @@ void lookAround() {
 			} else {
 				printf("To the west ");
 			}
-			printf("%s\n", locs[player->location->connections[i]]->intro);
+			printf("%s.\n", locs[player->location->connections[i]]->intro);
 		}
 	}
 	
 	printf("\nOn the floor there is:\n");
 	bool isObject = false;
 	for (int j=0; j<numObjs; j++) {
-		//printf("objs[i] : %s\nobjs[i] loc: %s\nplayer loc : %s\n\n", objs[j]->tag, objs[j]->location->tag, player->location->tag);
 		if (objs[j]->location != NULL && !strcmp(objs[j]->location->tag, player->location->tag)) {
+			printf("%s %s\n", objs[j]->article, objs[j]->tag);
 			isObject = true;
-			printf("a %s\n", objs[j]->tag);
 		}
 	}
 	if (!isObject) {
@@ -113,7 +115,16 @@ void lookAround() {
 	for (int k=0; k<numNPCs; k++) {
 		if (!strcmp(npcs[k]->location->tag, player->location->tag)) {
 			if (npcs[k]->alive) {
-				printf("\nYou can also see %s.\n", npcs[k]->super->description);
+				bool hasWeapon = false;
+				for (int i=0; i<numObjs; i++) {
+					if (!strcmp(objs[i]->location->tag, npcs[k]->super->tag)) {
+						hasWeapon = true;
+						printf("\nYou can also see %s %s, wielding %s %s.\n", npcs[k]->super->article, npcs[k]->super->description, objs[i]->article, objs[i]->tag);
+					}
+				}
+				if (!hasWeapon) {
+					printf("\nYou can also see %s %s.\n", npcs[k]->super->article, npcs[k]->super->description);
+				}
 			} else {
 				printf("\nThe body of a %s lies on the floor.\n", npcs[k]->super->tag);
 			}
