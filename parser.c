@@ -46,10 +46,17 @@ bool parse(char* input) {
 			playerAttack(noun);
 		} else if (!strcmp(verb, "eat")) {
 			eat(noun);
+		} else if (!strcmp(verb, "open")) {
+			openCloseDoor(noun, "open");
+		} else if (!strcmp(verb, "close")) {
+			openCloseDoor(noun, "close");
 		} else if (!strcmp(verb, "clear")) {
 			system("clear");
 		} else if (!strcmp(verb, "health")) {
 			printf("HP : %i\n", player->health);
+		} else if (!strcmp(verb, "make")) {
+			system("make");
+			return false;
 		} else {
 			printf("I'm not sure how to %s.\n", verb);
 		}

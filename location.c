@@ -5,6 +5,7 @@
 #include "location.h"
 #include "object.h"
 #include "npc.h"
+#include "dictionary.h"
 
 int playerLocation = 0;
 int numLocs = 20;
@@ -21,16 +22,15 @@ void generateLocations() {
 		char *line = NULL;
 		size_t n;
 
-		char *article;
-		char *tag;
-		char *intro;
-		char *description;
-		int connections[4];
-		char directions[4];
-
 		getline(&line, &n, locFile);
 
-		article = strtok(line, "/");
+		char *article, *tag, *intro, *description,
+			 *doorOrLoc, *locked, *open;
+		char directions[4];
+		int connections[4];
+
+		doorOrLoc = strtok(line, "/");
+		article = strtok(NULL, "/");
 		tag = strtok(NULL, "/");
 		intro = strtok(NULL, "/");
 		description = strtok(NULL, "/");
@@ -46,8 +46,19 @@ void generateLocations() {
 		directions[0] = (char) *strtok(NULL, "/");
 		directions[1] = (char) *strtok(NULL, "/");
 		directions[2] = (char) *strtok(NULL, "/");
-		directions[3] = (char) *strtok(NULL, "\n");
+		directions[3] = (char) *strtok(NULL, "/");
+		locked = strtok(NULL, "/");
+		open = strtok(NULL, "\n");
 
+		if (!strcmp(doorOrLoc, "door")) {
+			locs[i]->isDoor = true;
+			locs[i]->open = atoi(open);
+			locs[i]->locked = atoi(locked);
+		} else {
+			locs[i]->locked = false;
+			locs[i]->isDoor = false;
+			locs[i]->open = true;
+		}
 		strcpy(locs[i]->article, article);
 		strcpy(locs[i]->tag, tag);
 		strcpy(locs[i]->intro, intro);
@@ -96,7 +107,17 @@ void lookAround() {
 			} else {
 				printf("To the west ");
 			}
-			printf("%s.\n", locs[player->location->connections[i]]->intro);
+			if (locs[player->location->connections[i]]->isDoor && locs[player->location->connections[i]]->open) {
+				if (!strcmp(locs[locs[player->location->connections[i]]->connections[0]]->tag, player->location->tag)) {
+					printf("%s, through which you can see %s.\n", locs[player->location->connections[i]]->intro, locs[locs[player->location->connections[i]]->connections[1]]->intro);
+				} else {
+					printf("%s, through which you can see %s.\n", locs[player->location->connections[i]]->intro, locs[locs[player->location->connections[i]]->connections[0]]->intro);
+				}
+			} else if (locs[player->location->connections[i]]->isDoor){
+				printf("%s, which is closed.\n", locs[player->location->connections[i]]->intro);
+			} else {
+				printf("%s.\n", locs[player->location->connections[i]]->intro);
+			}
 		}
 	}
 	
@@ -134,15 +155,34 @@ void lookAround() {
 
 void go(char *noun) {
 	bool moved = false;
+	bool locked = false;
 	if (noun != NULL) {
 		for (int i=0; i<4; i++) {
-			if (!moved && player->location->connections[i] != -1 && (strlen(noun) == 1 && (int) noun[0] == player->location->directions[i])) {
-				player->location = locs[player->location->connections[i]];
-				lookAround();
+			if (!moved && player->location->connections[i] != -1 && strlen(noun) == 1 && (int) noun[0] == player->location->directions[i]) {
+				if (locs[player->location->connections[i]]->isDoor) {
+					if (!locs[player->location->connections[i]]->open) {
+						locked = true;
+						printf("The door is closed. You should open it first.\n");
+					} else if (locs[player->location->connections[i]]->locked){
+						locked = true;
+						printf("The door is locked. Find something to unlock it first.\n");
+					} else {
+						if (!strcmp(locs[locs[player->location->connections[i]]->connections[0]]->tag, player->location->tag)) {
+							player->location = locs[locs[player->location->connections[i]]->connections[1]];
+						} else {
+							player->location = locs[locs[player->location->connections[i]]->connections[0]];
+						}
+					}
+				} else {
+					player->location = locs[player->location->connections[i]];
+				}
+				if (!locked) {
+					lookAround();
+				}
 				moved = true;
 			}
 		}
-		if (!moved) {
+		if (!moved && !locked) {
 			if (strlen(noun) == 1 && ((int) noun[0] == 'n' || (int) noun[0] == 'e' || (int) noun[0] == 's' || (int) noun[0] == 'w')) {
 				printf("You can't move in that direction at the moment.\n");
 			} else { 
@@ -151,6 +191,50 @@ void go(char *noun) {
 		}
 	} else {
 		printf("Please specify a direction to move in.\n");
+	}
+}
+
+void openCloseDoor(char *noun, char *op) {
+	if (noun != NULL && !strcmp(noun, "door")) {
+		char *direction;
+		direction = malloc(8);
+
+		printf("In which direction?\n\n>>> ");
+		fgets(direction, 8, stdin);
+		direction[strlen(direction)-1] = '\0';
+		getSynonyms(&direction);
+
+		if (strlen(direction) == 1 && (direction[0] == 'n' || direction[0] == 'e' || direction[0] == 'w' || direction[0] == 's')) {
+			for (int i=0; i<numLocs; i++) {
+				if (!strcmp(locs[i]->tag, player->location->tag)) {
+					for (int j=0; j<4; j++) {
+						if (locs[i]->connections[j] != -1 && locs[locs[i]->connections[j]]->isDoor && direction[0] == locs[i]->directions[j]) {
+							if (!strcmp(op, "open")) {
+								if (!locs[locs[i]->connections[j]]->locked && !locs[locs[i]->connections[j]]->open) {
+									printf("The door swings open.\n");
+									locs[locs[i]->connections[j]]->open = true;
+								} else if (!locs[locs[i]->connections[j]]->locked) {
+									printf("The door is already open.\n");
+								} else {
+									printf("That door is locked. Find something to unlock it first.\n");
+								}
+							} else {
+								if (locs[locs[i]->connections[j]]->open) {
+									printf("The door swings shut.\n");
+									locs[locs[i]->connections[j]]->open = false;
+								} else {
+									printf("The door is already closed.\n");
+								}
+							}
+						}
+					}
+				}
+			}
+		} else {
+			printf("I'm not sure which direction you mean.\n");
+		}
+	} else if (noun != NULL) {
+		printf("I don't know how to open a %s.\n", noun);
 	}
 }
 

@@ -23,6 +23,7 @@ void generateNPCs() {
 	for (int j=0; j<numLocs; j++) {
 		getline(&locLine, &m, locsFile);
 		strtok(locLine, "/");
+		strtok(NULL, "/");
 		strcpy(tags[j], strtok(NULL, "/"));
 	}
 	fclose(locsFile);
@@ -31,22 +32,14 @@ void generateNPCs() {
 		npcs[i] = malloc(sizeof(NPC));
 		npcs[i]->super = malloc(sizeof(Location));
 
-		char *line = NULL;
-		size_t n;
-
-		char *article;
-		char *tag;
-		char *intro;
-		char *description;
-		char *voiceline;
+		char *article, *tag, *intro, *description, *voiceline,
+			 *capacity, *health, *aggression, *locTag;
 		int connections[4];
 		char directions[4];
-		char *capacity;
-		char *health;
-		char *aggression;
-		char *locTag;
 		int locIndex;
 
+		char *line = NULL;
+		size_t n;
 		getline(&line, &n, npcFile);
 
 		article = strtok(line, "/");
@@ -82,7 +75,7 @@ void generateNPCs() {
 				break;
 			}
 		}
-
+		
 		strcpy(npcs[i]->super->article, article);
 		strcpy(npcs[i]->super->tag, tag);
 		strcpy(npcs[i]->super->intro, intro);

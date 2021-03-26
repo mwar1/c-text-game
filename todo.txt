@@ -1,4 +1,10 @@
-1. Clean up generation functions (e.g. but all char* declarations in one line.....)
 2. Add extra stats for NPCs (buffs, dmg resist etc.)
 3. Improve passages (fake destinations etc.)
 3. Improve parser grammer
+3. Save by storing commands (need to implement consistent randomness) (new branch)
+
+Current commit:
+- Splash screen
+- Basic doors
+- Locked doors, open doors
+- Look at locs and npcs

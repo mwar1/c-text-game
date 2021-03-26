@@ -25,6 +25,7 @@ void generateObjects() {
 	for (int j=0; j<numLocs; j++) {
 		getline(&locLine, &m, locsFile);
 		strtok(locLine, "/");
+		strtok(NULL, "/");
 		strcpy(locTags[j], strtok(NULL, "/"));
 	}
 	fclose(locsFile);
@@ -43,18 +44,12 @@ void generateObjects() {
 	for (int i=0; i<numObjs; i++) {
 		objs[i] = malloc(sizeof(Object));
 
-		char *line = NULL;
-		size_t n;
-
-		char *article;
-		char *tag;
-		char *description;
-		char *weight;
-		char *damage;
-		char *foodPoints;
-		char *locTag;
+		char *article, *tag, *description, *weight,
+			 *damage, *foodPoints, *locTag;
 		int locIndex = -1;
 
+		char *line = NULL;
+		size_t n;
 		getline(&line, &n, objFile);
 		
 		article = strtok(line, "/");
@@ -111,6 +106,7 @@ void take(char *noun) {
 				printf("%s added to inventory.\n", objs[i]->tag);
 				objs[i]->location = player->super;
 			} else {
+				taken = true;
 				printf("You're carrying too much already.\n");
 			}
 		}
@@ -147,15 +143,41 @@ void drop(char *noun) {
 }
 
 void look(char *noun) {
-	bool looked = false;
-	for (int i=0; i<numObjs; i++) {
-		if (noun != NULL && objs[i]->location != NULL && !strcmp(noun, objs[i]->tag) && (!strcmp(objs[i]->location->tag, "player") || !strcmp(objs[i]->location->tag, player->location->tag))) {
-			looked = true;
-			printf("It's %s %s.\n", objs[i]->article, objs[i]->description);
+	bool lookedObj, lookedLoc, lookedNPC = false;
+
+	if (noun != NULL) {
+		for (int i=0; i<numObjs; i++) {
+			if (objs[i]->location != NULL && !strcmp(noun, objs[i]->tag) && (!strcmp(objs[i]->location->tag, "player") || !strcmp(objs[i]->location->tag, player->location->tag))) {
+				lookedObj = true;
+				printf("It's %s %s.\n", objs[i]->article, objs[i]->description);
+			}
 		}
-	}
-	if (!looked) {
-		printf("I can't see a %s nearby.\n", noun);
+		if (!lookedObj) {
+			for (int i=0; i<numLocs; i++) {
+				if (!strcmp(noun, locs[i]->tag) && !lookedLoc) {
+					for (int j=0; j<4; j++) {
+						if (locs[i]->connections[j] != -1 && !strcmp(locs[locs[i]->connections[j]]->tag, player->location->tag)) {
+							char *tempIntro = locs[i]->intro;
+							tempIntro[0] -= 32;
+
+							printf("%s.\n", locs[i]->intro);
+							lookedLoc = true;
+						}
+					}
+				}
+			}
+			if (!lookedLoc) {
+				for (int i=0; i<numNPCs; i++) {
+					if (!strcmp(noun, npcs[i]->super->tag) && !strcmp(player->location->tag, npcs[i]->location->tag)) {
+						printf("It's %s %s.\n", npcs[i]->super->article, npcs[i]->super->description);
+						lookedNPC = true;
+					}
+				}
+				if (!lookedNPC) {
+					printf("I can't see a %s nearby.\n", noun);
+				}
+			}
+		}
 	}
 }
 

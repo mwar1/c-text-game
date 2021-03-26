@@ -4,7 +4,7 @@
 
 char *dictionary[][12] = {{"look", "observe", NULL},
 			 {"go", "move", "walk", "run", NULL},
-			 {"quit", "exit", "make", NULL},
+			 {"quit", "exit", NULL},
 			 {"n", "north", NULL},
 			 {"e", "east", NULL},
 			 {"w", "west", NULL},
