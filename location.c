@@ -16,21 +16,24 @@ NPC *player;
 
 void generateLocations() {
 	FILE *locFile = fopen("locations.txt", "r");
+
+	char *line = NULL;
+	size_t n;
+	getline(&line, &n, locFile), getline(&line, &n, locFile);
+
 	for (int i=0; i<numLocs; i++) {
 		locs[i] = malloc(sizeof(Location));
 
-		char *line = NULL;
-		size_t n;
-
 		getline(&line, &n, locFile);
 
-		char *article, *tag, *intro, *description,
-			 *doorOrLoc, *locked, *open;
+		char *article, *id, *tag, *intro, *description,
+			 *doorOrLoc, *locked, *open, *unlockWith;
 		char directions[4];
 		int connections[4];
 
 		doorOrLoc = strtok(line, "/");
 		article = strtok(NULL, "/");
+		id = strtok(NULL, "/");
 		tag = strtok(NULL, "/");
 		intro = strtok(NULL, "/");
 		description = strtok(NULL, "/");
@@ -48,18 +51,24 @@ void generateLocations() {
 		directions[2] = (char) *strtok(NULL, "/");
 		directions[3] = (char) *strtok(NULL, "/");
 		locked = strtok(NULL, "/");
-		open = strtok(NULL, "\n");
+		open = strtok(NULL, "/");
 
 		if (!strcmp(doorOrLoc, "door")) {
+			unlockWith = strtok(NULL, "\n");
+
+			strcpy(locs[i]->unlockWith, unlockWith);
 			locs[i]->isDoor = true;
 			locs[i]->open = atoi(open);
 			locs[i]->locked = atoi(locked);
 		} else {
+			strcpy(locs[i]->unlockWith, "null");
 			locs[i]->locked = false;
 			locs[i]->isDoor = false;
 			locs[i]->open = true;
 		}
+
 		strcpy(locs[i]->article, article);
+		strcpy(locs[i]->id, id);
 		strcpy(locs[i]->tag, tag);
 		strcpy(locs[i]->intro, intro);
 		strcpy(locs[i]->description, description);
@@ -76,6 +85,7 @@ void createPlayer() {
 	int tempConns[4] = {-1, -1, -1, -1};
 	char tempDirs[4] = {'x', 'x', 'x', 'x'};
 
+	strcpy(player->super->id, "player");
 	strcpy(player->super->tag, "player");
 	strcpy(player->super->intro, "you");
 	strcpy(player->super->description, "you");
@@ -124,7 +134,7 @@ void lookAround() {
 	printf("\nOn the floor there is:\n");
 	bool isObject = false;
 	for (int j=0; j<numObjs; j++) {
-		if (objs[j]->location != NULL && !strcmp(objs[j]->location->tag, player->location->tag)) {
+		if (objs[j]->location != NULL && !strcmp(objs[j]->location->id, player->location->id)) {
 			printf("%s %s\n", objs[j]->article, objs[j]->tag);
 			isObject = true;
 		}
@@ -134,11 +144,11 @@ void lookAround() {
 	}
 
 	for (int k=0; k<numNPCs; k++) {
-		if (!strcmp(npcs[k]->location->tag, player->location->tag)) {
+		if (!strcmp(npcs[k]->location->id, player->location->id)) {
 			if (npcs[k]->alive) {
 				bool hasWeapon = false;
 				for (int i=0; i<numObjs; i++) {
-					if (!strcmp(objs[i]->location->tag, npcs[k]->super->tag)) {
+					if (!strcmp(objs[i]->location->id, npcs[k]->super->id)) {
 						hasWeapon = true;
 						printf("\nYou can also see %s %s, wielding %s %s.\n", npcs[k]->super->article, npcs[k]->super->description, objs[i]->article, objs[i]->tag);
 					}
@@ -194,7 +204,7 @@ void go(char *noun) {
 	}
 }
 
-void openCloseDoor(char *noun, char *op) {
+void interactDoor(char *noun, char *op) {
 	if (noun != NULL && !strcmp(noun, "door")) {
 		char *direction;
 		direction = malloc(8);
@@ -209,21 +219,57 @@ void openCloseDoor(char *noun, char *op) {
 				if (!strcmp(locs[i]->tag, player->location->tag)) {
 					for (int j=0; j<4; j++) {
 						if (locs[i]->connections[j] != -1 && locs[locs[i]->connections[j]]->isDoor && direction[0] == locs[i]->directions[j]) {
+							Location *currentDoor = locs[locs[i]->connections[j]];
 							if (!strcmp(op, "open")) {
-								if (!locs[locs[i]->connections[j]]->locked && !locs[locs[i]->connections[j]]->open) {
+								if (!currentDoor->locked && !currentDoor->open) {
 									printf("The door swings open.\n");
 									locs[locs[i]->connections[j]]->open = true;
-								} else if (!locs[locs[i]->connections[j]]->locked) {
+								} else if (!currentDoor->locked) {
 									printf("The door is already open.\n");
 								} else {
 									printf("That door is locked. Find something to unlock it first.\n");
 								}
-							} else {
-								if (locs[locs[i]->connections[j]]->open) {
+							} else if (!strcmp(op, "close")) {
+								if (currentDoor->open) {
 									printf("The door swings shut.\n");
-									locs[locs[i]->connections[j]]->open = false;
+									currentDoor->open = false;
 								} else {
 									printf("The door is already closed.\n");
+								}
+							} else if (!strcmp(op, "unlock")) {
+								bool done = false;
+								if (currentDoor->locked) {
+									for (int k=0; k<numObjs; k++) {
+										if (!strcmp(objs[k]->id, currentDoor->unlockWith) && !strcmp(objs[k]->location->id, "player")) {
+											printf("The door is now unlocked.\n");
+											done = true;
+											currentDoor->locked = false;
+										}
+									}
+									if (!done) {
+										printf("You need to find something to unlock it with first.\n");
+									}
+								} else {
+									printf("That door is already unlocked.\n");
+								}
+							} else if (!strcmp(op, "lock")) {
+								bool done = false;
+								if (!currentDoor->locked) {
+									for (int k=0; k<numObjs; k++) {
+										if (!strcmp(objs[k]->id, currentDoor->unlockWith) && !currentDoor->open && !strcmp(objs[k]->location->id, "player")) {
+											printf("You lock the door.\n");
+											done = true;
+											currentDoor->locked = true;
+										} else if (!strcmp(objs[k]->id, currentDoor->unlockWith) && !strcmp(objs[k]->location->id, "player") && !done) {
+											printf("Close the door first.\n");
+											done = true;
+										}
+									}
+									if (!done) {
+										printf("You need to find something to lock it with first.\n");
+									}
+								} else {
+									printf("That door is already locked.\n");
 								}
 							}
 						}

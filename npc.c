@@ -20,6 +20,7 @@ void generateNPCs() {
 	size_t m;
 
 	char tags[numLocs][16];
+	getline(&locLine, &m, locsFile), getline(&locLine, &m, locsFile);
 	for (int j=0; j<numLocs; j++) {
 		getline(&locLine, &m, locsFile);
 		strtok(locLine, "/");
@@ -28,38 +29,29 @@ void generateNPCs() {
 	}
 	fclose(locsFile);
 
+	char *line = NULL;
+	size_t n;
+	getline(&line, &n, npcFile), getline(&line, &n, npcFile);
+
 	for (int i=0; i<numNPCs; i++) {
 		npcs[i] = malloc(sizeof(NPC));
 		npcs[i]->super = malloc(sizeof(Location));
 
-		char *article, *tag, *intro, *description, *voiceline,
+		char *article, *id, *tag, *intro, *description, *voiceline,
 			 *capacity, *health, *aggression, *locTag;
-		int connections[4];
-		char directions[4];
+		char directions[4] = "xxxx";
+		int connections[4] = {-1, -1, -1, -1};
 		int locIndex;
 
-		char *line = NULL;
-		size_t n;
 		getline(&line, &n, npcFile);
 
 		article = strtok(line, "/");
+		id = strtok(NULL, "/");
 		tag = strtok(NULL, "/");
 		intro = strtok(NULL, "/");
 		description = strtok(NULL, "/");
 		voiceline = strtok(NULL, "/");
-		char *tempConns[] = {strtok(NULL, "/"), strtok(NULL, "/"), strtok(NULL, "/"), strtok(NULL, "/")};
-		for (int i=0; i<4; i++) {
-			char *tempP;
-			long ret;
 
-			ret = strtol(tempConns[i], &tempP, 10);
-			connections[i] = ret;
-		}
-
-		directions[0] = (char) *strtok(NULL, "/");
-		directions[1] = (char) *strtok(NULL, "/");
-		directions[2] = (char) *strtok(NULL, "/");
-		directions[3] = (char) *strtok(NULL, "/");
 		capacity = strtok(NULL, "/");
 		int intCapacity = atoi(capacity);
 		health = strtok(NULL, "/");
@@ -75,17 +67,18 @@ void generateNPCs() {
 				break;
 			}
 		}
-		
+
 		strcpy(npcs[i]->super->article, article);
+		strcpy(npcs[i]->super->id, id);
 		strcpy(npcs[i]->super->tag, tag);
 		strcpy(npcs[i]->super->intro, intro);
 		strcpy(npcs[i]->super->description, description);
-		strcpy(npcs[i]->voiceline, voiceline);
 		memcpy(npcs[i]->super->connections, connections, sizeof(int)*4);
 		strcpy(npcs[i]->super->directions, directions);
 		npcs[i]->super->capacity = intCapacity;
-		npcs[i]->health = intHealth;
 		npcs[i]->location = locs[locIndex];
+		strcpy(npcs[i]->voiceline, voiceline);
+		npcs[i]->health = intHealth;
 		npcs[i]->aggression = intAggro;
 		npcs[i]->alive = true;
 	}

@@ -6,8 +6,8 @@
 #include "object.h"
 #include "npc.h"
 
-Object *objs[10];
-int numObjs = 10;
+Object *objs[12];
+int numObjs = 12;
 
 FILE *objFile;
 FILE *locsFile;
@@ -21,6 +21,8 @@ void generateObjects() {
 	char *locLine = NULL;
 	size_t m;
 
+	getline(&locLine, &m, locsFile), getline(&locLine, &m, locsFile);
+
 	char locTags[numLocs][16];
 	for (int j=0; j<numLocs; j++) {
 		getline(&locLine, &m, locsFile);
@@ -33,6 +35,8 @@ void generateObjects() {
 	char *npcLine = NULL;
 	size_t x;
 
+	getline(&npcLine, &x, npcFile), getline(&npcLine, &x, npcFile);
+
 	char npcTags[numNPCs][16];
 	for (int k=0; k<numNPCs; k++) {
 		getline(&npcLine, &x, npcFile);	
@@ -41,18 +45,21 @@ void generateObjects() {
 	}
 	fclose(npcFile);
 
+	char *line = NULL;
+	size_t n;
+	getline(&line, &n, objFile), getline(&line, &n, objFile);
+
 	for (int i=0; i<numObjs; i++) {
 		objs[i] = malloc(sizeof(Object));
 
-		char *article, *tag, *description, *weight,
+		char *article, *id, *tag, *description, *weight,
 			 *damage, *foodPoints, *locTag;
 		int locIndex = -1;
 
-		char *line = NULL;
-		size_t n;
 		getline(&line, &n, objFile);
 		
 		article = strtok(line, "/");
+		id = strtok(NULL, "/");
 		tag = strtok(NULL, "/");
 		description = strtok(NULL, "/");
 		weight = strtok(NULL, "/");
@@ -82,6 +89,7 @@ void generateObjects() {
 		}
 		
 		strcpy(objs[i]->article, article);
+		strcpy(objs[i]->id, id);
 		strcpy(objs[i]->tag, tag);
 		strcpy(objs[i]->description, description);
 		objs[i]->weight = intWeight;
@@ -94,10 +102,10 @@ void generateObjects() {
 void take(char *noun) {
 	bool taken = false;
 	for (int i=0; i<numObjs; i++) {
-		if (noun != NULL && !strcmp(noun, objs[i]->tag) && !strcmp(objs[i]->location->tag, player->location->tag)) {
+		if (noun != NULL && !strcmp(noun, objs[i]->tag) && !strcmp(objs[i]->location->id, player->location->id)) {
 			int load = 0;
 			for (int j=0; j<numObjs; j++) {
-				if (objs[j]->location != NULL && !strcmp(objs[j]->location->tag, "player")) {
+				if (objs[j]->location != NULL && !strcmp(objs[j]->location->id, "player")) {
 					load += objs[j]->weight;
 				}
 			}

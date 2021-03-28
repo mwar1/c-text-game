@@ -47,9 +47,13 @@ bool parse(char* input) {
 		} else if (!strcmp(verb, "eat")) {
 			eat(noun);
 		} else if (!strcmp(verb, "open")) {
-			openCloseDoor(noun, "open");
+			interactDoor(noun, "open");
 		} else if (!strcmp(verb, "close")) {
-			openCloseDoor(noun, "close");
+			interactDoor(noun, "close");
+		} else if (!strcmp(verb, "unlock")) {
+			interactDoor(noun, "unlock");
+		} else if (!strcmp(verb, "lock")) {
+			interactDoor(noun, "lock");
 		} else if (!strcmp(verb, "clear")) {
 			system("clear");
 		} else if (!strcmp(verb, "health")) {

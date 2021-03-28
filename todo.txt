@@ -1,10 +1,10 @@
+1. Add functions to get all objs/npcs in currentLoc, clean up corresponding code
 2. Add extra stats for NPCs (buffs, dmg resist etc.)
+3. Tidy up folder structure (headers and dependencies in seperate folders)
 3. Improve passages (fake destinations etc.)
-3. Improve parser grammer
+3. Improve parser grammer, multiple words for objects (e.g. gold key, silver key)
 3. Save by storing commands (need to implement consistent randomness) (new branch)
 
 Current commit:
-- Splash screen
-- Basic doors
-- Locked doors, open doors
-- Look at locs and npcs
+- Added descriptions in source files
+- Added ID member

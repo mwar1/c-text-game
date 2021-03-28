@@ -1,3 +1,5 @@
-a/troll/x/tall, blood-soaked troll, watching you intimidatingly/Grrrrrr/-1/-1/-1/-1/x/x/x/x/40/100/5/hall
-an/orc/x/orc watching you from a dark corner/You should watch your back.../-1/-1/-1/-1/x/x/x/x/20/75/2/cave
-a/dwarf/x/rather friendly-looking dwarf, dressed in what looks to be blacksmith's attire/Be careful exploring these woods, dangerous monsters rule the lands./-1/-1/-1/-1/x/x/x/x/15/50/0/castle
+article / id / tag / intro / description / voiceline / capacity / health / aggression / location->tag
+
+a/troll/troll/x/tall, blood-soaked troll, watching you intimidatingly/Grrrrrr/40/100/5/hall
+an/orc/orc/x/orc watching you from a dark corner/You should watch your back.../20/75/2/cave
+a/dwarf/dwarf/x/rather friendly-looking dwarf, dressed in what looks to be blacksmith's attire/Be careful exploring these woods, dangerous monsters rule the lands./20/50/0/castle

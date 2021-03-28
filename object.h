@@ -12,6 +12,7 @@ extern int numObjs;
 
 typedef struct Object {
 	char article[5];
+	char id[16];
 	char tag[16];
 	char description[128];
 	int weight;

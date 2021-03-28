@@ -7,7 +7,7 @@ void generateLocations();
 void createPlayer();
 void lookAround();
 void go(char*);
-void openCloseDoor(char*, char*);
+void interactDoor(char*, char*);
 void inventory();
 extern struct Location *locs[];
 extern struct NPC *player;
@@ -16,6 +16,7 @@ extern int playerLocation;
 
 typedef struct Location {
 	char article[5];
+	char id[16];
 	char tag[16];
 	char intro[128];
 	char description[128];
@@ -23,6 +24,7 @@ typedef struct Location {
 	char directions[4];
 	int capacity;
 	bool locked;
+	char unlockWith[16];
 	bool isDoor;
 	bool open;
 } Location;

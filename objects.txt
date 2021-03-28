@@ -1,10 +1,14 @@
-a/sword/bronze longsword, intricately engraved with otherwordly markings/10/20/0/castle
-a/coin/small gold coin/10/0/0/bridge
-a/book/leather bound book. It is written in a language which you don't understand/10/0/0/library
-a/burger/very medieval-looking and slightly mouldy Big Mac/10/0/10/hall
-an/oscar/oscar/10/0/50/castle
-a/dagger/small, rusty dagger with a sharp blade/10/15/0/path9
-a/bottle/empty glass bottle/10/2/0/path7
-a/bag/crumpled brown paper bag/10/0/0/path2
-an/axe/long, bronze-headed axe, stained red with blood/10/20/0/dwarf
-a/club/gnarled wooden club/10/15/0/orc
+article / ID / tag / description / weight / damage / foodPoints / location->tag
+
+a/club/sword/bronze longsword, intricately engraved with otherwordly markings/10/20/0/castle
+a/coin/coin/small gold coin/10/0/0/bridge
+a/book/book/leather bound book, written in a language which you don't understand/10/0/0/library
+a/burger/burger/very medieval-looking and slightly mouldy Big Mac/10/0/10/hall
+an/oscar/oscar/oscar/10/0/50/castle
+a/dagger/dagger/small, rusty dagger with a sharp blade/10/15/0/path9
+a/bottle/bottle/empty glass bottle/10/2/0/path7
+a/bag/bag/crumpled brown paper bag/10/0/0/path2
+an/axe/axe/long, bronze-headed axe, stained red with blood/10/20/0/dwarf
+a/club/club/gnarled wooden club/10/15/0/orc
+a/key1/key/small copper key/5/0/0/castle
+a/key2/key/fairly weighty gold key, with an intricate blade/7/0/0/hall
