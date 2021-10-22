@@ -10,7 +10,7 @@ void go(char*);
 void interactDoor(char*, char*);
 void inventory();
 int *getObjsInLoc();
-int *getNPCsInLoc();
+int *getNPCsInLoc(bool);
 extern struct Location *locs[];
 extern struct NPC *player;
 extern int numLocs;

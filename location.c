@@ -144,7 +144,7 @@ void lookAround() {
 		printf("nothing.\n");
 	}
 
-	p = getNPCsInLoc();
+	p = getNPCsInLoc(false);
 	for (int i=0; i<10; i++) {
 		if (*(p+i) == 999) break;
 		if (npcs[*(p+i)]->alive) {
@@ -313,11 +313,11 @@ int *getObjsInLoc() {
 	return objIs;
 }
 
-int *getNPCsInLoc() {
+int *getNPCsInLoc(bool requireAlive) {
 	static int NPCIs[10];
 	int x=0;
 	for (int i=0; i<numNPCs; i++) {
-		if (npcs[i]->location != NULL && !strcmp(npcs[i]->location->id, player->location->id)) {
+		if ((npcs[i]->location != NULL && !strcmp(npcs[i]->location->id, player->location->id)) && ((requireAlive && npcs[i]->alive) || !requireAlive)) {
 			NPCIs[x] = i;
 			x++;
 		}

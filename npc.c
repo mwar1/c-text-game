@@ -194,23 +194,23 @@ void playerAttack(char *noun) {
 }
 
 bool npcAttack() {
-	for (int i=0; i<numNPCs; i++) {
-		if (!strcmp(npcs[i]->location->tag, player->location->tag) && npcs[i]->alive) {
-			int seed = rand() % (11);  // Random number from 1 to 10
-			if (seed < npcs[i]->aggression) {
-				// Attack the player
-				bool hasWeapon = false; 
-				for (int j=0; j<numObjs; j++) {
-					if (!strcmp(objs[j]->location->tag, npcs[i]->super->tag) && objs[j]->damage != 0) {
-						printf("The %s attacks you with %s %s.\nYou take %i damage.\n", npcs[i]->super->tag, objs[j]->article, objs[j]->tag, objs[j]->damage);
-						player->health -= objs[j]->damage;
-						hasWeapon = true;
-					}
+	int *p = getNPCsInLoc(true);
+	for (int i=0; i<10; i++) {
+		if (*(p+i) == 999) break;
+		int seed = rand() % (11);  // Random number from 1 to 10
+		if (seed < npcs[*(p+i)]->aggression) {
+			// Attack the player
+			bool hasWeapon = false; 
+			for (int j=0; j<numObjs; j++) {
+				if (!strcmp(objs[j]->location->tag, npcs[*(p+i)]->super->tag) && objs[j]->damage != 0) {
+					printf("The %s attacks you with %s %s.\nYou take %i damage.\n", npcs[*(p+i)]->super->tag, objs[j]->article, objs[j]->tag, objs[j]->damage);
+					player->health -= objs[j]->damage;
+					hasWeapon = true;
 				}
-				if (!hasWeapon) {
-						printf("The %s punches you, dealing 5 damage.\n", npcs[i]->super->tag);
-						player->health -= 5;
-				}
+			}
+			if (!hasWeapon) {
+					printf("The %s punches you, dealing 5 damage.\n", npcs[*(p+i)]->super->tag);
+					player->health -= 5;
 			}
 		}
 	}
