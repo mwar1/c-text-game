@@ -1,4 +1,4 @@
-1. Add functions to get all objs/npcs in currentLoc, clean up corresponding code
+1. Clean up code using getNPCSinLoc and getObjsInLoc functions
 2. Add extra stats for NPCs (buffs, dmg resist etc.)
 3. Tidy up folder structure (headers and dependencies in seperate folders)
 3. Improve passages (fake destinations etc.)
