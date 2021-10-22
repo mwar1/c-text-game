@@ -288,11 +288,12 @@ void interactDoor(char *noun, char *op) {
 void inventory() {
 	bool holding = false;
 	printf("You are holding:\n");
-	for (int i=0; i<numObjs; i++) {
-		if (objs[i]->location != NULL && !strcmp(objs[i]->location->tag, "player")) {
-			holding = true;
-			printf("a %s\n", objs[i]->tag);
-		}
+
+	int *p = getObjsInLoc();
+	for (int i=0; i<10; i++) {
+		if (*(p+i) == 999) break;
+		holding = true;
+		printf("a %s\n", objs[*(p+i)]->tag);
 	}
 	if (!holding) {
 		printf("nothing.\n");
