@@ -7,14 +7,19 @@
 #include "object.h"
 #include "npc.h"
 #include "dictionary.h"
+#include "system.h"
 
-char *verb;
-char *verbSyn;
-char *noun;
-char *nounSyn;
+#define NUMBER_OF_COMMANDS 20
+
+char *verb, *verbSyn, *noun, *nounSyn, *command;
+int currentCommand = 0;
+char commands[NUMBER_OF_COMMANDS][32];
 
 bool parse(char* input) {
 	if (strcmp(input, "\n") && input[0] != 32) {
+		strcpy(commands[currentCommand], input);
+		currentCommand++;
+
 		verb = strtok(input, " \n");	
 		getSynonyms(&verb);
 		noun = strtok(NULL, " \n");
@@ -61,6 +66,10 @@ bool parse(char* input) {
 		} else if (!strcmp(verb, "make")) {
 			system("make");
 			return false;
+		} else if (!strcmp(verb, "save")) {
+			save(commands);
+		} else if (!strcmp(verb, "load")) {
+			load();
 		} else {
 			printf("I'm not sure how to %s.\n", verb);
 		}

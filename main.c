@@ -42,7 +42,6 @@ void getInitalInput() {
 			printf("This will be improved in a further update.\n");
 		} else if (!strcmp(input, "load")){
 			printf("This isn't actually a thing yet :/\n");
-			ready = true;
 		} else if (!strcmp(input, "play")) {
 			printf("Good luck!\n");
 			ready = true;
@@ -67,7 +66,7 @@ int main() {
 	createPlayer();
 	generateObjects();
 
-	strcpy(input, "look around");
+	strcpy(input, "look around\n");
 	while (parse(input) && getInput(input));
 	finish();
 }

@@ -133,32 +133,33 @@ void lookAround() {
 	
 	printf("\nOn the floor there is:\n");
 	bool isObject = false;
-	for (int j=0; j<numObjs; j++) {
-		if (objs[j]->location != NULL && !strcmp(objs[j]->location->id, player->location->id)) {
-			printf("%s %s\n", objs[j]->article, objs[j]->tag);
-			isObject = true;
-		}
+
+	int *p = getObjsInLoc();
+	for (int i=0; i<10; i++) {
+		if (*(p+i) == 999) break;
+		printf("%s %s\n", objs[*(p+i)]->article, objs[*(p+i)]->tag);
+		isObject = true;
 	}
 	if (!isObject) {
 		printf("nothing.\n");
 	}
 
-	for (int k=0; k<numNPCs; k++) {
-		if (!strcmp(npcs[k]->location->id, player->location->id)) {
-			if (npcs[k]->alive) {
-				bool hasWeapon = false;
-				for (int i=0; i<numObjs; i++) {
-					if (!strcmp(objs[i]->location->id, npcs[k]->super->id)) {
-						hasWeapon = true;
-						printf("\nYou can also see %s %s, wielding %s %s.\n", npcs[k]->super->article, npcs[k]->super->description, objs[i]->article, objs[i]->tag);
-					}
+	p = getNPCsInLoc(false);
+	for (int i=0; i<10; i++) {
+		if (*(p+i) == 999) break;
+		if (npcs[*(p+i)]->alive) {
+			bool hasWeapon = false;
+			for (int j=0; j<numObjs; j++) {
+				if (!strcmp(objs[j]->location->id, npcs[*(p+i)]->super->id)) {
+					hasWeapon = true;
+					printf("\nYou can also see %s %s, wielding %s %s.\n", npcs[*(p+i)]->super->article, npcs[*(p+i)]->super->description, objs[j]->article, objs[j]->tag);
 				}
-				if (!hasWeapon) {
-					printf("\nYou can also see %s %s.\n", npcs[k]->super->article, npcs[k]->super->description);
-				}
-			} else {
-				printf("\nThe body of a %s lies on the floor.\n", npcs[k]->super->tag);
 			}
+			if (!hasWeapon) {
+				printf("\nYou can also see %s %s.\n", npcs[*(p+i)]->super->article, npcs[*(p+i)]->super->description);
+			}
+		} else {
+			printf("\nThe body of a %s lies on the floor.\n", npcs[*(p+i)]->super->tag);
 		}
 	}
 }
@@ -287,13 +288,40 @@ void interactDoor(char *noun, char *op) {
 void inventory() {
 	bool holding = false;
 	printf("You are holding:\n");
-	for (int i=0; i<numObjs; i++) {
-		if (objs[i]->location != NULL && !strcmp(objs[i]->location->tag, "player")) {
-			holding = true;
-			printf("a %s\n", objs[i]->tag);
-		}
+
+	int *p = getObjsInLoc();
+	for (int i=0; i<10; i++) {
+		if (*(p+i) == 999) break;
+		holding = true;
+		printf("a %s\n", objs[*(p+i)]->tag);
 	}
 	if (!holding) {
 		printf("nothing.\n");
 	}
+}
+
+int *getObjsInLoc() {
+	static int objIs[10];
+	int x=0;
+	for (int i=0; i<numObjs; i++) {
+		if (objs[i]->location != NULL && !strcmp(objs[i]->location->id, player->location->id)) {
+			objIs[x] = i;
+			x++;
+		}
+	}	
+	objIs[x] = 999;
+	return objIs;
+}
+
+int *getNPCsInLoc(bool requireAlive) {
+	static int NPCIs[10];
+	int x=0;
+	for (int i=0; i<numNPCs; i++) {
+		if ((npcs[i]->location != NULL && !strcmp(npcs[i]->location->id, player->location->id)) && ((requireAlive && npcs[i]->alive) || !requireAlive)) {
+			NPCIs[x] = i;
+			x++;
+		}
+	}
+	NPCIs[x] = 999;
+	return NPCIs;	
 }
