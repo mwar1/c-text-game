@@ -1,10 +1,10 @@
-1. Clean up code using getNPCSinLoc and getObjsInLoc functions
-2. Add extra stats for NPCs (buffs, dmg resist etc.)
-3. Tidy up folder structure (headers and dependencies in seperate folders)
-3. Improve passages (fake destinations etc.)
+1. Inventory listing and checking bugged? Esp when opening doors
+1. Seg fault when eating burger
+1. Add extra stats for NPCs (buffs, dmg resist etc.)
+2. Improve passages (fake destinations etc.)
 3. Improve parser grammer, multiple words for objects (e.g. gold key, silver key)
-3. Save by storing commands (need to implement consistent randomness) (new branch)
+4. Save by storing commands (need to implement consistent randomness) (new branch)
 
 Current commit:
-- Added descriptions in source files
-- Added ID member
+- Added save function - 3 letter name
+- Load function
