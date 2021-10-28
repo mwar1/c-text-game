@@ -192,8 +192,7 @@ void go(char *noun) {
 					lookAround();
 				}
 				moved = true;
-			}
-		}
+			}		}
 		if (!moved && !locked) {
 			if (strlen(noun) == 1 && ((int) noun[0] == 'n' || (int) noun[0] == 'e' || (int) noun[0] == 's' || (int) noun[0] == 'w')) {
 				printf("You can't move in that direction at the moment.\n");
@@ -206,13 +205,13 @@ void go(char *noun) {
 	}
 }
 
-void interactDoor(char *noun, char *op) {
+void interactDoor(char *noun, char *op, FILE *fp) {
 	if (noun != NULL && !strcmp(noun, "door")) {
 		char *direction;
 		direction = malloc(8);
 
 		printf("In which direction?\n");
-		getInput(direction, 8);
+		getInput(direction, 8, fp);
 		direction[strlen(direction)-1] = '\0';
 		getSynonyms(&direction);
 

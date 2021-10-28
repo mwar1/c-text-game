@@ -3,6 +3,7 @@
 #include <string.h>
 #include <stdbool.h>
 #include <unistd.h>
+#include "system.h"
 #include "input.h"
 #include "location.h"
 #include "object.h"
@@ -22,15 +23,17 @@ char welcomeMessage[] =
 "			  		      ▄▄ ▄▄ █░░ █▀█ ▄▀█ █▀▄ ▄▄ ▄▄\n"
 "			  		      ░░ ░░ █▄▄ █▄█ █▀█ █▄▀ ░░ ░░\n\n"
 "					      ▄▄ ▄▄ █░█ █▀▀ █░░ █▀█ ▄▄ ▄▄\n"
-"					      ░░ ░░ █▀█ ██▄ █▄▄ █▀▀ ░░ ░░\n";
+"					      ░░ ░░ █▀█ ██▄ █▄▄ █▀▀ ░░ ░░\n\n"
+"					      ▄▄ ▄▄ █▀█ █░█ █░░ ▀█▀ ▄▄ ▄▄\n"
+"					      ░░ ░░ ▀▀█ █▄█ █░░ ░█░ ░░ ░░\n";
 
 void finish() {
 	printf("Thank you for playing.\n");
 	exit(0);
 }
 
-void getInitalInput() {
-	bool ready = false;
+bool getInitalInput() {
+	bool ready, newGame = false;
 	while (!ready) {
 		printf("\n>>> ");
 		fgets(input, 32, stdin);
@@ -41,14 +44,16 @@ void getInitalInput() {
 			printf("At the moment, commands should be in the form '<noun> <verb>', for example 'look book'.\n");
 			printf("This will be improved in a further update.\n");
 		} else if (!strcmp(input, "load")){
-			printf("This isn't actually a thing yet :/\n");
+			bool success = load();
+			ready = success;
 		} else if (!strcmp(input, "play")) {
 			printf("Good luck!\n");
-			ready = true;
+			ready = newGame = true;
 		} else if (!strcmp(input, "quit")) {
 			finish();
 		}
 	}
+	return newGame;
 }
 
 int main() {
@@ -56,17 +61,22 @@ int main() {
 	printf("\n\n\n");
 	puts(welcomeMessage);
 
-	getInitalInput();
-	sleep(2);
-	system("clear");
-	printf("\n");
-
 	generateLocations();
 	generateNPCs();
 	createPlayer();
 	generateObjects();
 
-	strcpy(input, "look around\n");
-	while (parse(input) && getInput(input, 24));
+	bool newGame = getInitalInput();
+
+	if (newGame) {
+		sleep(2);
+		system("clear");
+		printf("\n");
+
+		strcpy(input, "look around\n");
+	} else {
+		getInput(input, 24, stdin);
+	}
+	while (parse(input, stdin) && getInput(input, 24, stdin));
 	finish();
 }

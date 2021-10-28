@@ -1,6 +1,10 @@
 
 mjw
+look around
 go s
 go s
-kill me
+go s
+attack orc
+me
+y
 save

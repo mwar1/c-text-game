@@ -6,7 +6,7 @@
 
 void generateNPCs();
 void talk(char*);
-void playerAttack(char*);
+void playerAttack(char*, FILE*);
 bool npcAttack();
 extern int numNPCs;
 extern struct NPC *npcs[];

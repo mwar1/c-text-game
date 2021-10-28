@@ -12,9 +12,8 @@
 
 char *verb, *verbSyn, *noun, *nounSyn;
 
-bool parse(char* input) {
+bool parse(char* input, FILE *fp) {
 	if (strcmp(input, "\n") && input[0] != 32) {
-
 		verb = strtok(input, " \n");	
 		getSynonyms(&verb);
 		noun = strtok(NULL, " \n");
@@ -43,17 +42,17 @@ bool parse(char* input) {
 		} else if (!strcmp(verb, "talk")) {
 			talk(noun);
 		} else if (!strcmp(verb, "fight")) {
-			playerAttack(noun);
+			playerAttack(noun, fp);
 		} else if (!strcmp(verb, "eat")) {
 			eat(noun);
 		} else if (!strcmp(verb, "open")) {
-			interactDoor(noun, "open");
+			interactDoor(noun, "open", fp);
 		} else if (!strcmp(verb, "close")) {
-			interactDoor(noun, "close");
+			interactDoor(noun, "close", fp);
 		} else if (!strcmp(verb, "unlock")) {
-			interactDoor(noun, "unlock");
+			interactDoor(noun, "unlock", fp);
 		} else if (!strcmp(verb, "lock")) {
-			interactDoor(noun, "lock");
+			interactDoor(noun, "lock", fp);
 		} else if (!strcmp(verb, "clear")) {
 			system("clear");
 		} else if (!strcmp(verb, "health")) {

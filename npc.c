@@ -110,7 +110,7 @@ void talk(char *noun) {
 	}
 }
 
-void playerAttack(char *noun) {
+void playerAttack(char *noun, FILE *fp) {
 	bool found = false;
 	bool attacked = false;
 	if (noun != NULL) {
@@ -122,7 +122,7 @@ void playerAttack(char *noun) {
 				bool gotWeapon = false;
 
 				printf("With what?\n");
-				getInput(weapon, 12);
+				getInput(weapon, 12, fp);
 				weapon[strlen(weapon)-1] = '\0';
 
 				for (int j=0; j<numObjs; j++) {
@@ -153,7 +153,7 @@ void playerAttack(char *noun) {
 						strcpy(useFist, "y");
 					} else {
 						printf("You don't have a %s.\nUse your fists instead? (y/n)\n", weapon);
-						getInput(useFist, 4);
+						getInput(useFist, 4, fp);
 						useFist[strlen(useFist)-1] = '\0';
 					}
 
