@@ -5,7 +5,7 @@
 
 char *line;
 
-void save(char commands[20][32]) {
+void save(char commands[20][24]) {
 	char saveName[4];
 	char yesOrNo[2];
 	size_t len = 32;

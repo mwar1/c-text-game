@@ -8,8 +8,8 @@ void generateNPCs();
 void talk(char*);
 void playerAttack(char*);
 bool npcAttack();
-extern struct NPC *npcs[];
 extern int numNPCs;
+extern struct NPC *npcs[];
 
 typedef struct NPC {
 	Location *super;

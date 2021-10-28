@@ -6,6 +6,7 @@
 #include "object.h"
 #include "npc.h"
 #include "dictionary.h"
+#include "input.h"
 
 int playerLocation = 0;
 int numLocs = 20;
@@ -210,8 +211,8 @@ void interactDoor(char *noun, char *op) {
 		char *direction;
 		direction = malloc(8);
 
-		printf("In which direction?\n\n>>> ");
-		fgets(direction, 8, stdin);
+		printf("In which direction?\n");
+		getInput(direction, 8);
 		direction[strlen(direction)-1] = '\0';
 		getSynonyms(&direction);
 

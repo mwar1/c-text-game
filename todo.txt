@@ -1,3 +1,4 @@
+0. Save all entered data e.g. what to attack with, direction to open door
 1. Inventory listing and checking bugged? Esp when opening doors
 1. Seg fault when eating burger
 1. Add extra stats for NPCs (buffs, dmg resist etc.)

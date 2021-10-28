@@ -9,7 +9,7 @@
 #include "npc.h"
 #include "parser.h"
 
-char input[32];
+char input[24];
 char welcomeMessage[] =
 "			░██╗░░░░░░░██╗███████╗██╗░░░░░░█████╗░░█████╗░███╗░░░███╗███████╗██╗\n"
 "			░██║░░██╗░░██║██╔════╝██║░░░░░██╔══██╗██╔══██╗████╗░████║██╔════╝██║\n"
@@ -67,6 +67,6 @@ int main() {
 	generateObjects();
 
 	strcpy(input, "look around\n");
-	while (parse(input) && getInput(input));
+	while (parse(input) && getInput(input, 24));
 	finish();
 }

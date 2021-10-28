@@ -5,6 +5,7 @@
 #include "npc.h"
 #include "object.h"
 #include "location.h"
+#include "input.h"
 
 int numNPCs = 3;
 NPC *npcs[3];
@@ -116,11 +117,12 @@ void playerAttack(char *noun) {
 		for (int i=0; i<numNPCs; i++) {
 			if (npcs[i]->alive && !strcmp(noun, npcs[i]->super->tag) && !strcmp(npcs[i]->location->tag, player->location->tag)) {
 				found = true;
-				char weapon[16];
+				char *weapon;
+				weapon = malloc(12);
 				bool gotWeapon = false;
 
-				printf("with what?\n\n>>> ");
-				fgets(weapon, 16, stdin);
+				printf("With what?\n");
+				getInput(weapon, 12);
 				weapon[strlen(weapon)-1] = '\0';
 
 				for (int j=0; j<numObjs; j++) {
@@ -145,12 +147,13 @@ void playerAttack(char *noun) {
 					}
 				}
 				if (!gotWeapon) {
-					char useFist[4];
+					char *useFist;
+					useFist = malloc(4);
 					if (!strcmp(weapon, "fists") || !strcmp(weapon, "fist") || !strcmp(weapon, "hands") || !strcmp(weapon, "hand")) {
 						strcpy(useFist, "y");
 					} else {
-						printf("You don't have a %s.\nUse your fists instead? (y/n)\n\n>>> ", weapon);
-						fgets(useFist, 4, stdin);
+						printf("You don't have a %s.\nUse your fists instead? (y/n)\n", weapon);
+						getInput(useFist, 4);
 						useFist[strlen(useFist)-1] = '\0';
 					}
 
@@ -160,7 +163,9 @@ void playerAttack(char *noun) {
 						npcs[i]->aggression++;
 						attacked = true;
 					}
+					free(useFist);
 				}
+				free(weapon);
 			} else if (!npcs[i]->alive && !strcmp(noun, npcs[i]->super->tag) && !strcmp(npcs[i]->location->tag, player->location->tag)) {
 				printf("The %s is dead.\nI don't think it would be wise to attack it anymore.\n", npcs[i]->super->tag);
 				found = true;

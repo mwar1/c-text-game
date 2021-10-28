@@ -1,23 +1,6 @@
 
 mjw
-look around
 go s
 go s
-save
-
-abc
-look around
-go w
-go w
-take burger
-take key
-look key
-save
-
-pop
-look around
-go n
-go n
-go n
-kill dwarf
+kill me
 save

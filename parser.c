@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include "input.h"
 #include "parser.h"
 #include "location.h"
 #include "object.h"
@@ -9,16 +10,10 @@
 #include "dictionary.h"
 #include "system.h"
 
-#define NUMBER_OF_COMMANDS 20
-
-char *verb, *verbSyn, *noun, *nounSyn, *command;
-int currentCommand = 0;
-char commands[NUMBER_OF_COMMANDS][32];
+char *verb, *verbSyn, *noun, *nounSyn;
 
 bool parse(char* input) {
 	if (strcmp(input, "\n") && input[0] != 32) {
-		strcpy(commands[currentCommand], input);
-		currentCommand++;
 
 		verb = strtok(input, " \n");	
 		getSynonyms(&verb);
