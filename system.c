@@ -2,13 +2,14 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
+#include <unistd.h>
+#include "parser.h"
 
-char *line;
-
-void save(char commands[20][32]) {
+void save(char commands[20][24]) {
 	char saveName[4];
 	char yesOrNo[2];
-	size_t len = 32;
+	char *line;
+	size_t len = 24;
 	int i, overwriteIndex;
 	bool foundName, overwrite = false;
 	FILE *fp;
@@ -93,6 +94,44 @@ void save(char commands[20][32]) {
 	}
 }
 
-void load() {
-	;
+bool load() {
+	bool success, foundSave = false;
+
+	char saveName[5];
+	printf("\nEnter save name :\n>>> ");
+	fgets(saveName, 5, stdin);
+
+	char *line;
+	size_t len = 24;
+	FILE *savesP = fopen("saves.txt", "a+");
+	while (!foundSave && getline(&line, &len, savesP) != -1) {
+		if (!strcmp(line, saveName)) {
+			foundSave = true;
+		}
+	}
+	if (foundSave) {
+		success = true;
+		bool endOfSave = false;
+
+		printf("Loading save....\n");
+		sleep(2);
+		system("clear");
+		printf("\n");
+		while (!endOfSave) {
+			getline(&line, &len, savesP);
+			if (!strcmp(line, "save\n")) {
+				endOfSave = true;
+			} else {
+				printf("\n>>> %s", line);
+				parse(line, savesP);
+				printf("\n");
+			}
+		}
+		printf("~~~\nGame succesfully loaded.\n~~~\n");
+	} else {
+		printf("Save name not found.\n");
+	}
+
+	fclose(savesP);
+	return success;
 }

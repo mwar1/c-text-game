@@ -3,6 +3,6 @@
 
 #include <stdbool.h>
 
-bool parse(char*);
+bool parse(char*, FILE*);
 
 #endif

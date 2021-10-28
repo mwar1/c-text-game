@@ -7,7 +7,7 @@ void generateLocations();
 void createPlayer();
 void lookAround();
 void go(char*);
-void interactDoor(char*, char*);
+void interactDoor(char*, char*, FILE*);
 void inventory();
 int *getObjsInLoc();
 int *getNPCsInLoc(bool);
