@@ -135,7 +135,7 @@ void lookAround() {
 	printf("\nOn the floor there is:\n");
 	bool isObject = false;
 
-	int *p = getObjsInLoc();
+	int *p = getObjsInLoc(false);
 	for (int i=0; i<10; i++) {
 		if (*(p+i) == 999) break;
 		printf("%s %s\n", objs[*(p+i)]->article, objs[*(p+i)]->tag);
@@ -228,7 +228,7 @@ void interactDoor(char *noun, char *op, FILE *fp) {
 								} else if (!currentDoor->locked) {
 									printf("The door is already open.\n");
 								} else {
-									printf("That door is locked. Find something to unlock it first.\n");
+									printf("That door is locked, you must unlock it before it can be opened.\n");
 								}
 							} else if (!strcmp(op, "close")) {
 								if (currentDoor->open) {
@@ -289,24 +289,31 @@ void inventory() {
 	bool holding = false;
 	printf("You are holding:\n");
 
-	int *p = getObjsInLoc();
+	int *p = getObjsInLoc(true);
 	for (int i=0; i<10; i++) {
 		if (*(p+i) == 999) break;
 		holding = true;
-		printf("a %s\n", objs[*(p+i)]->tag);
+		printf("%s %s\n", objs[*(p+i)]->article, objs[*(p+i)]->tag);
 	}
 	if (!holding) {
 		printf("nothing.\n");
 	}
 }
 
-int *getObjsInLoc() {
+int *getObjsInLoc(bool isInventory) {
 	static int objIs[10];
 	int x=0;
 	for (int i=0; i<numObjs; i++) {
-		if (objs[i]->location != NULL && !strcmp(objs[i]->location->id, player->location->id)) {
-			objIs[x] = i;
-			x++;
+		if (isInventory) {
+			if (objs[i]->location != NULL && !strcmp(objs[i]->location->tag, "player")) {
+				objIs[x] = i;
+				x++;
+			}
+		} else {
+			if (objs[i]->location != NULL && !strcmp(objs[i]->location->id, player->location->id)) {
+				objIs[x] = i;
+				x++;
+			}
 		}
 	}	
 	objIs[x] = 999;

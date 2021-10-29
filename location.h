@@ -9,7 +9,7 @@ void lookAround();
 void go(char*);
 void interactDoor(char*, char*, FILE*);
 void inventory();
-int *getObjsInLoc();
+int *getObjsInLoc(bool);
 int *getNPCsInLoc(bool);
 extern struct Location *locs[];
 extern struct NPC *player;

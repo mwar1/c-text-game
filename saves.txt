@@ -1,10 +1,44 @@
-
-mjw
+abc
+1635514404
 look around
 go s
+take coin
+drop coin
+
+aaa
+1635514579
+look around
+go w
+go w
+take key
+go e
+go e
+unlock dorr
+unlock door
+north
+
+mjw
+1635514632
+look around
+open door
+north
 go s
 go s
-attack orc
-me
-y
-save
+go s
+go e
+take bottle
+
+qwe
+1635514727
+look around
+go w
+go w
+go e
+
+pop
+1635514836
+look around
+take oscar
+eat oscar
+take key
+

@@ -1,11 +1,10 @@
-0. Save all entered data e.g. what to attack with, direction to open door
-1. Inventory listing and checking bugged? Esp when opening doors
-1. Seg fault when eating burger
-1. Add extra stats for NPCs (buffs, dmg resist etc.)
-2. Improve passages (fake destinations etc.)
-3. Improve parser grammer, multiple words for objects (e.g. gold key, silver key)
-4. Save by storing commands (need to implement consistent randomness) (new branch)
+2. Infinite commands, possibly save each one as it comes in?
+3. Add extra stats for NPCs (buffs, dmg resist etc.)
+4. Improve passages (fake destinations etc.)
+5. Improve parser grammer, multiple words for objects (e.g. gold key, silver key)
+6. Save by storing commands (need to implement consistent randomness) (new branch)
 
 Current commit:
-- Added save function - 3 letter name
-- Load function
+- Fixed inventory listing
+- Consistent randomness, and saved seed
+- Each command stored one-by-one, removing the limit on commands

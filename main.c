@@ -3,6 +3,7 @@
 #include <string.h>
 #include <stdbool.h>
 #include <unistd.h>
+#include <time.h>
 #include "system.h"
 #include "input.h"
 #include "location.h"
@@ -11,6 +12,7 @@
 #include "parser.h"
 
 char input[24];
+int seed;
 char welcomeMessage[] =
 "			░██╗░░░░░░░██╗███████╗██╗░░░░░░█████╗░░█████╗░███╗░░░███╗███████╗██╗\n"
 "			░██║░░██╗░░██║██╔════╝██║░░░░░██╔══██╗██╔══██╗████╗░████║██╔════╝██║\n"
@@ -47,7 +49,6 @@ bool getInitalInput() {
 			bool success = load();
 			ready = success;
 		} else if (!strcmp(input, "play")) {
-			printf("Good luck!\n");
 			ready = newGame = true;
 		} else if (!strcmp(input, "quit")) {
 			finish();
@@ -69,6 +70,11 @@ int main() {
 	bool newGame = getInitalInput();
 
 	if (newGame) {
+		seed = (int) time(NULL);
+		createNewSave();
+		srand(seed);
+
+		printf("Good luck!\n");
 		sleep(2);
 		system("clear");
 		printf("\n");

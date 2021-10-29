@@ -20,6 +20,7 @@ bool parse(char* input, FILE *fp) {
 		getSynonyms(&noun);
 
 		if (!strcmp(verb, "quit")) {
+			saveInput("\n");
 			return false;
 		} else if (!strcmp(verb, "help")) {
 			printf("Type in any command to navigate the world, and hope that the parser knows how to handle it.\n");
@@ -61,7 +62,7 @@ bool parse(char* input, FILE *fp) {
 			system("make");
 			return false;
 		} else if (!strcmp(verb, "save")) {
-			save(commands);
+			printf("Commands are saved after every turn.\n");
 		} else if (!strcmp(verb, "load")) {
 			load();
 		} else {
