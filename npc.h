@@ -5,8 +5,8 @@
 #include "location.h"
 
 void generateNPCs();
-void talk(char*);
-void playerAttack(char*, FILE*);
+bool talk();
+bool playerAttack();
 bool npcAttack();
 extern int numNPCs;
 extern struct NPC *npcs[];

@@ -2,10 +2,10 @@
 #define OBJECT_H
 
 void generateObjects();
-void take(char*);
-void drop(char*);
-void look(char*);
-void eat(char*);
+bool take();
+bool drop();
+bool look();
+bool eat();
 extern struct Object* getObjs();
 extern struct Object *objs[];
 extern int numObjs;

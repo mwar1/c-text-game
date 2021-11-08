@@ -3,7 +3,7 @@
 
 #include <stdbool.h>
 
-bool getInput(char*, size_t, FILE*);
+bool getInput(char*, size_t);
 void output(char[]);
 
 #endif

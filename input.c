@@ -4,12 +4,10 @@
 #include "input.h"
 #include "system.h"
 
-#define NUMBER_OF_COMMANDS 20
-
-bool getInput(char *input, size_t length, FILE *fp) {
+bool getInput(char *input, size_t length) {
 	printf("\n>>> ");
-	fgets(input, length, fp);
-	if (fp != stdin) printf("%s", input);
+	fgets(input, length, readFileP);
+	if (readFileP != stdin) printf("%s", input);
 
 	saveInput(input);
 	return true;

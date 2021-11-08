@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#include "parser.h"
 #include "location.h"
 #include "object.h"
 #include "npc.h"
@@ -99,10 +100,10 @@ void generateObjects() {
 	fclose(objFile);
 }
 
-void take(char *noun) {
+bool take() {
 	bool taken = false;
 	for (int i=0; i<numObjs; i++) {
-		if (noun != NULL && !strcmp(noun, objs[i]->tag) && !strcmp(objs[i]->location->id, player->location->id)) {
+		if (params[0] != NULL && !strcmp(params[0], objs[i]->tag) && !strcmp(objs[i]->location->id, player->location->id)) {
 			int load = 0;
 			for (int j=0; j<numObjs; j++) {
 				if (objs[j]->location != NULL && !strcmp(objs[j]->location->id, "player")) {
@@ -122,47 +123,54 @@ void take(char *noun) {
 	if (!taken) {
 		bool targetNPC = false;
 		for (int j=0; j<numNPCs; j++) {
-			if (!npcs[j]->alive && !strcmp(npcs[j]->location->tag, player->location->tag) && !strcmp(npcs[j]->super->tag, noun)) {
+			if (!npcs[j]->alive && !strcmp(npcs[j]->location->tag, player->location->tag) && !strcmp(npcs[j]->super->tag, params[0])) {
 				printf("You try to pick up the rotting corpse of the %s, but its too heavy.\n", npcs[j]->super->tag);
 				targetNPC = true;
-			} else if (!strcmp(npcs[j]->location->tag, player->location->tag) && !strcmp(npcs[j]->super->tag, noun)) {
+			} else if (!strcmp(npcs[j]->location->tag, player->location->tag) && !strcmp(npcs[j]->super->tag, params[0])) {
 				printf("I don't think the %s would take too kindly to that.\n", npcs[j]->super->tag);
 				targetNPC = true;
 			}
 		}
 		if (!targetNPC) {
-			printf("I can't see a %s nearby.\n", noun);
+			printf("I can't see a %s nearby.\n", params[0]);
 		}
 	}
+	return true;
 }
 
-void drop(char *noun) {
+bool drop() {
 	bool dropped = false;
 	for (int i=0; i<numObjs; i++) {
-		if (noun != NULL && objs[i]->location != NULL && !strcmp(noun, objs[i]->tag) && !strcmp(objs[i]->location->tag, "player")) {
+		if (params[0] != NULL && objs[i]->location != NULL && !strcmp(params[0], objs[i]->tag) && !strcmp(objs[i]->location->tag, "player")) {
 			dropped = true;
 			printf("Dropped %s\n", objs[i]->tag);
 			objs[i]->location = player->location;
 		}
 	}
 	if (!dropped) {
-		printf("You're not holding a %s.\n", noun);
+		printf("You're not holding a %s.\n", params[0]);
 	}
+	return true;
 }
 
-void look(char *noun) {
-	bool lookedObj, lookedLoc, lookedNPC = false;
+bool look() {
+	bool looked, lookedObj, lookedLoc, lookedNPC = false;
 
-	if (noun != NULL) {
+	if (params[0] != NULL || !strcmp(params[0], "around\n")) {
+		lookAround();
+		looked = true;
+	}
+
+	if (!looked && params[0] != NULL) {
 		for (int i=0; i<numObjs; i++) {
-			if (objs[i]->location != NULL && !strcmp(noun, objs[i]->tag) && (!strcmp(objs[i]->location->tag, "player") || !strcmp(objs[i]->location->tag, player->location->tag))) {
+			if (objs[i]->location != NULL && !strcmp(params[0], objs[i]->tag) && (!strcmp(objs[i]->location->tag, "player") || !strcmp(objs[i]->location->tag, player->location->tag))) {
 				lookedObj = true;
 				printf("It's %s %s.\n", objs[i]->article, objs[i]->description);
 			}
 		}
 		if (!lookedObj) {
 			for (int i=0; i<numLocs; i++) {
-				if (!strcmp(noun, locs[i]->tag) && !lookedLoc) {
+				if (!strcmp(params[0], locs[i]->tag) && !lookedLoc) {
 					for (int j=0; j<4; j++) {
 						if (locs[i]->connections[j] != -1 && !strcmp(locs[locs[i]->connections[j]]->tag, player->location->tag)) {
 							char *tempIntro = locs[i]->intro;
@@ -176,25 +184,26 @@ void look(char *noun) {
 			}
 			if (!lookedLoc) {
 				for (int i=0; i<numNPCs; i++) {
-					if (!strcmp(noun, npcs[i]->super->tag) && !strcmp(player->location->tag, npcs[i]->location->tag)) {
+					if (!strcmp(params[0], npcs[i]->super->tag) && !strcmp(player->location->tag, npcs[i]->location->tag)) {
 						printf("It's %s %s.\n", npcs[i]->super->article, npcs[i]->super->description);
 						lookedNPC = true;
 					}
 				}
 				if (!lookedNPC) {
-					printf("I can't see a %s nearby.\n", noun);
+					printf("I can't see a %s nearby.\n", params[0]);
 				}
 			}
 		}
 	}
+	return true;
 }
 
-void eat(char *noun) {
+bool eat() {
 	bool eaten = false;
 	bool found = false;
 	for (int i=0; i<numObjs; i++) {
-		if (noun != NULL && !eaten) {
-			if (!strcmp(noun, objs[i]->tag) && !strcmp(objs[i]->location->tag, "player")) {
+		if (params[0] != NULL && !eaten) {
+			if (!strcmp(params[0], objs[i]->tag) && !strcmp(objs[i]->location->tag, "player")) {
 				if (objs[i]->foodPoints != 0) {
 					printf("Eating the %s...\n", objs[i]->tag);
 					if (objs[i]->foodPoints > 0) {
@@ -212,24 +221,25 @@ void eat(char *noun) {
 			}
 		}
 	}
-	if (!eaten && !found && noun != NULL) {
+	if (!eaten && !found && params[0] != NULL) {
 		bool targetNPC = false;
 		for (int j=0; j<numNPCs; j++) {
-			if (!npcs[j]->alive && !strcmp(npcs[j]->location->tag, player->location->tag) && !strcmp(npcs[j]->super->tag, noun)) {
+			if (!npcs[j]->alive && !strcmp(npcs[j]->location->tag, player->location->tag) && !strcmp(npcs[j]->super->tag, params[0])) {
 				printf("Judging by the smell, I don't think you should do that.\n");
 				targetNPC = true;
-			} else if (!strcmp(npcs[j]->location->tag, player->location->tag) && !strcmp(npcs[j]->super->tag, noun)) {
+			} else if (!strcmp(npcs[j]->location->tag, player->location->tag) && !strcmp(npcs[j]->super->tag, params[0])) {
 				printf("I don't think the %s would take too kindly to that.\n", npcs[j]->super->tag);
 				targetNPC = true;
-			} else if (!strcmp(npcs[j]->super->tag, noun)) {
-				printf("I can't see a %s nearby.\n", noun);
+			} else if (!strcmp(npcs[j]->super->tag, params[0])) {
+				printf("I can't see a %s nearby.\n", params[0]);
 				targetNPC = true;
 			}
 		}
 		if (!targetNPC) {
-			printf("You're not holding a %s.\n", noun);
+			printf("You're not holding a %s.\n", params[0]);
 		}
-	} else if (noun == NULL) {
+	} else if (params[0] == NULL) {
 		printf("Please specify something to eat.\n");
 	}
+	return true;
 }

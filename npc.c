@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include "npc.h"
+#include "parser.h"
 #include "object.h"
 #include "location.h"
 #include "input.h"
@@ -87,43 +88,50 @@ void generateNPCs() {
 	fclose(npcFile);
 }
 
-void talk(char *noun) {
+bool talk() {
 	bool talked = false;
-	if (noun != NULL) {
+	if (params[0] != NULL) {
 		for (int i=0; i<numNPCs; i++) {
-			if (npcs[i]->alive && !strcmp(noun, npcs[i]->super->tag) && !strcmp(npcs[i]->location->tag, player->location->tag)) {
+			if (npcs[i]->alive && !strcmp(params[0], npcs[i]->super->tag) && !strcmp(npcs[i]->location->tag, player->location->tag)) {
 				printf("\"%s\"\n", npcs[i]->voiceline);
 				talked = true;
 			} else if (!npcs[i]->alive) {
 				printf("Unfortunately the %s is dead, and so doesn't respond.\n", npcs[i]->super->tag);
 				talked = true;
-			} else if (strcmp(npcs[i]->location->tag, player->location->tag) && !strcmp(noun, npcs[i]->super->tag)) {
-				printf("I can't see a %s nearby.\n", noun);
+			} else if (strcmp(npcs[i]->location->tag, player->location->tag) && !strcmp(params[0], npcs[i]->super->tag)) {
+				printf("I can't see a %s nearby.\n", params[0]);
 				talked = true;
 			}
 		}
 		if (!talked) {
-			printf("The %s doesn't respond.\n", noun);
+			printf("The %s doesn't respond.\n", params[0]);
 		}
 	} else {
 		printf("You talk to yourself.\n");
 	}
+	return true;
 }
 
-void playerAttack(char *noun, FILE *fp) {
-	bool found = false;
-	bool attacked = false;
-	if (noun != NULL) {
+bool playerAttack() {
+	bool found, attacked, freeWeapon = false;
+	params[0][strcspn(params[0], "\n")] = 0;
+	if (strlen(params[0]) > 0) {
 		for (int i=0; i<numNPCs; i++) {
-			if (npcs[i]->alive && !strcmp(noun, npcs[i]->super->tag) && !strcmp(npcs[i]->location->tag, player->location->tag)) {
+			if (npcs[i]->alive && !strcmp(params[0], npcs[i]->super->tag) && !strcmp(npcs[i]->location->tag, player->location->tag)) {
 				found = true;
 				char *weapon;
-				weapon = malloc(12);
 				bool gotWeapon = false;
+				if (strlen(params[1]) != 0) {
+					weapon = params[1];
+					freeWeapon = false;
+				} else {
+					weapon = malloc(12);
+					freeWeapon = true;
 
-				printf("With what?\n");
-				getInput(weapon, 12, fp);
-				weapon[strlen(weapon)-1] = '\0';
+					printf("With what?\n");
+					getInput(weapon, 12);
+					weapon[strlen(weapon)-1] = '\0';
+				}
 
 				for (int j=0; j<numObjs; j++) {
 					if (!strcmp(weapon, objs[j]->tag) && !gotWeapon) {
@@ -141,8 +149,6 @@ void playerAttack(char *noun, FILE *fp) {
 								}
 								attacked = true;
 							}
-						} else {
-							printf("You're not holding %s.\n", weapon);
 						}
 					}
 				}
@@ -153,7 +159,7 @@ void playerAttack(char *noun, FILE *fp) {
 						strcpy(useFist, "y");
 					} else {
 						printf("You don't have a %s.\nUse your fists instead? (y/n)\n", weapon);
-						getInput(useFist, 4, fp);
+						getInput(useFist, 4);
 						useFist[strlen(useFist)-1] = '\0';
 					}
 
@@ -165,12 +171,12 @@ void playerAttack(char *noun, FILE *fp) {
 					}
 					free(useFist);
 				}
-				free(weapon);
-			} else if (!npcs[i]->alive && !strcmp(noun, npcs[i]->super->tag) && !strcmp(npcs[i]->location->tag, player->location->tag)) {
+				if (freeWeapon) free(weapon);
+			} else if (!npcs[i]->alive && !strcmp(params[0], npcs[i]->super->tag) && !strcmp(npcs[i]->location->tag, player->location->tag)) {
 				printf("The %s is dead.\nI don't think it would be wise to attack it anymore.\n", npcs[i]->super->tag);
 				found = true;
-			} else if (!strcmp(noun, npcs[i]->super->tag)) {
-				printf("There isn't a %s nearby.\n", noun);
+			} else if (!strcmp(params[0], npcs[i]->super->tag)) {
+				printf("There isn't a %s nearby.\n", params[0]);
 				found = true;
 			}
 			if (attacked) {
@@ -191,11 +197,12 @@ void playerAttack(char *noun, FILE *fp) {
 			}
 		}
 		if (!found) {
-			printf("You attack the %s, nothing happens...\n", noun);
+			printf("You attack the %s, nothing happens...\n", params[0]);
 		}
 	} else {
 		printf("You start attacking the air. Nothing happens...\n");
 	}
+	return true;
 }
 
 bool npcAttack() {

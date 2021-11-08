@@ -5,18 +5,6 @@ go s
 take coin
 drop coin
 
-aaa
-1635514579
-look around
-go w
-go w
-take key
-go e
-go e
-unlock dorr
-unlock door
-north
-
 mjw
 1635514632
 look around
@@ -41,4 +29,9 @@ look around
 take oscar
 eat oscar
 take key
+akk
+1635703289
+look around
+help
+commands
 

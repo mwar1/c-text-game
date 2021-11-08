@@ -5,4 +5,6 @@ void createNewSave();
 void saveInput(char*);
 bool load();
 
+extern FILE *readFileP;
+
 #endif
