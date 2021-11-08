@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#include "parser.h"
 #include "location.h"
 #include "object.h"
 #include "npc.h"
@@ -13,6 +14,7 @@ int numLocs = 20;
 int numConnections;
 
 Location *locs[20];
+Location *currentLoc;
 NPC *player;
 
 void generateLocations() {
@@ -99,7 +101,7 @@ void createPlayer() {
 	player->health = 50;
 }
 
-void lookAround() {
+bool lookAround() {
 	numConnections = 0;
 	for (int i=0; i<4; i++) {
 		if (player->location->connections[i] != -1) {
@@ -163,14 +165,15 @@ void lookAround() {
 			printf("\nThe body of a %s lies on the floor.\n", npcs[*(p+i)]->super->tag);
 		}
 	}
+	return true;
 }
 
-void go(char *noun) {
+bool go() {
 	bool moved = false;
 	bool locked = false;
-	if (noun != NULL) {
+	if (params[0] != NULL) {
 		for (int i=0; i<4; i++) {
-			if (!moved && player->location->connections[i] != -1 && strlen(noun) == 1 && (int) noun[0] == player->location->directions[i]) {
+			if (!moved && player->location->connections[i] != -1 && strlen(params[0]) == 1 && (int) params[0][0] == player->location->directions[i]) {
 				if (locs[player->location->connections[i]]->isDoor) {
 					if (!locs[player->location->connections[i]]->open) {
 						locked = true;
@@ -194,7 +197,7 @@ void go(char *noun) {
 				moved = true;
 			}		}
 		if (!moved && !locked) {
-			if (strlen(noun) == 1 && ((int) noun[0] == 'n' || (int) noun[0] == 'e' || (int) noun[0] == 's' || (int) noun[0] == 'w')) {
+			if (strlen(params[0]) == 1 && ((int) params[0][0] == 'n' || (int) params[0][0] == 'e' || (int) params[0][0] == 's' || (int) params[0][0] == 'w')) {
 				printf("You can't move in that direction at the moment.\n");
 			} else { 
 				printf("I don't know how to move in that direction.\n");
@@ -203,101 +206,8 @@ void go(char *noun) {
 	} else {
 		printf("Please specify a direction to move in.\n");
 	}
-}
-
-void interactDoor(char *noun, char *op, FILE *fp) {
-	if (noun != NULL && !strcmp(noun, "door")) {
-		char *direction;
-		direction = malloc(8);
-
-		printf("In which direction?\n");
-		getInput(direction, 8, fp);
-		direction[strlen(direction)-1] = '\0';
-		getSynonyms(&direction);
-
-		if (strlen(direction) == 1 && (direction[0] == 'n' || direction[0] == 'e' || direction[0] == 'w' || direction[0] == 's')) {
-			for (int i=0; i<numLocs; i++) {
-				if (!strcmp(locs[i]->tag, player->location->tag)) {
-					for (int j=0; j<4; j++) {
-						if (locs[i]->connections[j] != -1 && locs[locs[i]->connections[j]]->isDoor && direction[0] == locs[i]->directions[j]) {
-							Location *currentDoor = locs[locs[i]->connections[j]];
-							if (!strcmp(op, "open")) {
-								if (!currentDoor->locked && !currentDoor->open) {
-									printf("The door swings open.\n");
-									locs[locs[i]->connections[j]]->open = true;
-								} else if (!currentDoor->locked) {
-									printf("The door is already open.\n");
-								} else {
-									printf("That door is locked, you must unlock it before it can be opened.\n");
-								}
-							} else if (!strcmp(op, "close")) {
-								if (currentDoor->open) {
-									printf("The door swings shut.\n");
-									currentDoor->open = false;
-								} else {
-									printf("The door is already closed.\n");
-								}
-							} else if (!strcmp(op, "unlock")) {
-								bool done = false;
-								if (currentDoor->locked) {
-									for (int k=0; k<numObjs; k++) {
-										if (!strcmp(objs[k]->id, currentDoor->unlockWith) && !strcmp(objs[k]->location->id, "player")) {
-											printf("The door is now unlocked.\n");
-											done = true;
-											currentDoor->locked = false;
-										}
-									}
-									if (!done) {
-										printf("You need to find something to unlock it with first.\n");
-									}
-								} else {
-									printf("That door is already unlocked.\n");
-								}
-							} else if (!strcmp(op, "lock")) {
-								bool done = false;
-								if (!currentDoor->locked) {
-									for (int k=0; k<numObjs; k++) {
-										if (!strcmp(objs[k]->id, currentDoor->unlockWith) && !currentDoor->open && !strcmp(objs[k]->location->id, "player")) {
-											printf("You lock the door.\n");
-											done = true;
-											currentDoor->locked = true;
-										} else if (!strcmp(objs[k]->id, currentDoor->unlockWith) && !strcmp(objs[k]->location->id, "player") && !done) {
-											printf("Close the door first.\n");
-											done = true;
-										}
-									}
-									if (!done) {
-										printf("You need to find something to lock it with first.\n");
-									}
-								} else {
-									printf("That door is already locked.\n");
-								}
-							}
-						}
-					}
-				}
-			}
-		} else {
-			printf("I'm not sure which direction you mean.\n");
-		}
-	} else if (noun != NULL) {
-		printf("I don't know how to open a %s.\n", noun);
-	}
-}
-
-void inventory() {
-	bool holding = false;
-	printf("You are holding:\n");
-
-	int *p = getObjsInLoc(true);
-	for (int i=0; i<10; i++) {
-		if (*(p+i) == 999) break;
-		holding = true;
-		printf("%s %s\n", objs[*(p+i)]->article, objs[*(p+i)]->tag);
-	}
-	if (!holding) {
-		printf("nothing.\n");
-	}
+	currentLoc = getPlayerLocation();
+	return true;
 }
 
 int *getObjsInLoc(bool isInventory) {
@@ -331,4 +241,255 @@ int *getNPCsInLoc(bool requireAlive) {
 	}
 	NPCIs[x] = 999;
 	return NPCIs;	
+}
+
+Location *getPlayerLocation() {
+	for (int i=0; i<numLocs; i++) {
+		if (!strcmp(locs[i]->tag, player->location->tag)) {
+			return locs[i];
+		}
+	}
+}
+
+bool openDoor() {
+	char *direction;
+	bool correctDirection = false;
+
+	// Check for malformed commands
+	if (strlen(params[1]) == 0) {
+		printf("Please specify what you would like to open.\n");
+		return true;
+	} else if (strcmp(params[1], "door")) {
+		printf("I'm not sure how to open a %s.\n", params[1]);
+		return true;
+	}
+
+	if (strlen(params[0]) == 0) {
+		direction = malloc(8);
+
+		printf("In which direction?\n");
+		getInput(direction, 8);
+		direction[strlen(direction)-1] = '\0';
+		getSynonyms(&direction);
+	} else {
+		direction = params[0];
+	}
+	if (strlen(direction) == 1 && (direction[0] == 'n' || direction[0] == 'e' || direction[0] == 'w' || direction[0] == 's')) {
+		for (int i=0; i<numLocs; i++) {
+			if (!strcmp(locs[i]->tag, player->location->tag)) {
+				for (int j=0; j<4; j++) {
+					if (locs[i]->connections[j] != -1 && locs[locs[i]->connections[j]]->isDoor && direction[0] == locs[i]->directions[j]) {
+						correctDirection = true;
+						Location *currentDoor = locs[currentLoc->connections[i]];
+						if (!currentDoor->locked && !currentDoor->open) {
+							printf("The door swings open.\n");
+							locs[currentLoc->connections[i]]->open = true;
+						} else if (!currentDoor->locked) {
+							printf("The door is already open.\n");
+						} else {
+							printf("That door is locked, you must unlock it before it can be opened.\n");
+						}
+					} else {
+						printf("There isn't a door in that direction.\n");
+					}
+				}
+			}
+		}
+		if (!correctDirection) {
+			printf("There isn't a door in that direction.\n");
+		}
+	} else {
+		printf("I'm not sure which direction you mean.\n");
+	}
+	return true;
+}
+
+bool closeDoor() {
+	char *direction;
+	bool correctDirection;
+
+	// Check for malformed commands
+	if (strlen(params[1]) == 0) {
+		printf("Please specify what you would like to open.\n");
+		return true;
+	} else if (strcmp(params[1], "door")) {
+		printf("I'm not sure how to open a %s.\n", params[1]);
+		return true;
+	}
+
+	if (params[0] == NULL) {
+		direction = malloc(8);
+
+		printf("In which direction?\n");
+		getInput(direction, 8);
+		direction[strlen(direction)-1] = '\0';
+		getSynonyms(&direction);
+	} else {
+		direction = params[0];
+	}
+	if (strlen(direction) == 1 && (direction[0] == 'n' || direction[0] == 'e' || direction[0] == 'w' || direction[0] == 's')) {
+		for (int i=0; i<numLocs; i++) {
+			if (!strcmp(locs[i]->tag, player->location->tag)) {
+				for (int j=0; j<4; j++) {
+					if (locs[i]->connections[j] != -1 && locs[locs[i]->connections[j]]->isDoor && direction[0] == locs[i]->directions[j]) {
+						correctDirection = true;
+						Location *currentDoor = locs[locs[i]->connections[j]];
+						if (currentDoor->open) {
+							printf("The door swings shut.\n");
+							currentDoor->open = false;
+						} else {
+							printf("The door is already closed.\n");
+						}
+					} else {
+						printf("There isn't a door in that direction.\n");
+					}
+				}
+			}
+		}
+		if (!correctDirection) {
+			printf("There isn't a door in that direction.\n");
+		}
+	} else {
+		printf("I'm not sure which direction you mean.\n");
+	}
+	return true;
+}
+
+bool lockDoor() {
+	char *direction;
+	bool correctDirection;
+
+	// Check for malformed commands
+	if (strlen(params[1]) == 0) {
+		printf("Please specify what you would like to open.\n");
+		return true;
+	} else if (strcmp(params[1], "door")) {
+		printf("I'm not sure how to open a %s.\n", params[1]);
+		return true;
+	}
+
+	if (params[0] == NULL) {
+		direction = malloc(8);
+
+		printf("In which direction?\n");
+		getInput(direction, 8);
+		direction[strlen(direction)-1] = '\0';
+		getSynonyms(&direction);
+	} else {
+		direction = params[0];
+	}
+	if (strlen(direction) == 1 && (direction[0] == 'n' || direction[0] == 'e' || direction[0] == 'w' || direction[0] == 's')) {
+		for (int i=0; i<numLocs; i++) {
+			if (!strcmp(locs[i]->tag, player->location->tag)) {
+				for (int j=0; j<4; j++) {
+					if (locs[i]->connections[j] != -1 && locs[locs[i]->connections[j]]->isDoor && direction[0] == locs[i]->directions[j]) {
+						correctDirection = true;
+						Location *currentDoor = locs[locs[i]->connections[j]];
+						bool done = false;
+						if (!currentDoor->locked) {
+							for (int k=0; k<numObjs; k++) {
+								if (!strcmp(objs[k]->id, currentDoor->unlockWith) && !currentDoor->open && !strcmp(objs[k]->location->id, "player")) {
+									printf("You lock the door.\n");
+									done = true;
+									currentDoor->locked = true;
+								} else if (!strcmp(objs[k]->id, currentDoor->unlockWith) && !strcmp(objs[k]->location->id, "player") && !done) {
+									printf("Close the door first.\n");
+									done = true;
+								}
+							}
+							if (!done) {
+								printf("You need to find something to lock it with first.\n");
+							}
+						} else {
+							printf("That door is already locked.\n");
+						}
+					} else {
+						printf("There isn't a door in that direction.\n");
+					}
+				}
+			}
+		}
+		if (!correctDirection) {
+			printf("There isn't a door in that direction.\n");
+		}
+	} else {
+		printf("I'm not sure which direction you mean.\n");
+	}
+	return true;
+}
+
+bool unlockDoor() {
+	char *direction;
+	bool correctDirection;
+
+	// Check for malformed commands
+	if (strlen(params[1]) == 0) {
+		printf("Please specify what you would like to open.\n");
+		return true;
+	} else if (strcmp(params[1], "door")) {
+		printf("I'm not sure how to open a %s.\n", params[1]);
+		return true;
+	}
+
+	if (params[0] == NULL) {
+		direction = malloc(8);
+
+		printf("In which direction?\n");
+		getInput(direction, 8);
+		direction[strlen(direction)-1] = '\0';
+		getSynonyms(&direction);
+	} else {
+		direction = params[0];
+	}
+	if (strlen(direction) == 1 && (direction[0] == 'n' || direction[0] == 'e' || direction[0] == 'w' || direction[0] == 's')) {
+		for (int i=0; i<numLocs; i++) {
+			if (!strcmp(locs[i]->tag, player->location->tag)) {
+				for (int j=0; j<4; j++) {
+					if (locs[i]->connections[j] != -1 && locs[locs[i]->connections[j]]->isDoor && direction[0] == locs[i]->directions[j]) {
+						correctDirection = true;
+						Location *currentDoor = locs[locs[i]->connections[j]];
+						bool done = false;
+						if (currentDoor->locked) {
+							for (int k=0; k<numObjs; k++) {
+								if (!strcmp(objs[k]->id, currentDoor->unlockWith) && !strcmp(objs[k]->location->id, "player")) {
+									printf("The door is now unlocked.\n");
+									done = true;
+									currentDoor->locked = false;
+								}
+							}
+							if (!done) {
+								printf("You need to find something to unlock it with first.\n");
+							}
+						} else {
+							printf("That door is already unlocked.\n");
+						}
+					} else {
+						printf("There isn't a door in that direction.\n");
+					}
+				}
+			}
+		}
+		if (!correctDirection) {
+			printf("There isn't a door in that direction.\n");
+		}
+	} else {
+		printf("I'm not sure which direction you mean.\n");
+	}
+	return true;
+}
+
+bool inventory() {
+	bool holding = false;
+	printf("You are holding:\n");
+
+	int *p = getObjsInLoc(true);
+	for (int i=0; i<10; i++) {
+		if (*(p+i) == 999) break;
+		holding = true;
+		printf("%s %s\n", objs[*(p+i)]->article, objs[*(p+i)]->tag);
+	}
+	if (!holding) {
+		printf("nothing.\n");
+	}
+	return true;
 }

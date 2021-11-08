@@ -42,9 +42,7 @@ bool getInitalInput() {
 		input[strlen(input)-1] = '\0';
 
 		if (!strcmp(input, "help")) {
-			printf("Type in any command to navigate the world, and hope that the parser knows how to handle it.\n");
-			printf("At the moment, commands should be in the form '<noun> <verb>', for example 'look book'.\n");
-			printf("This will be improved in a further update.\n");
+			help();
 		} else if (!strcmp(input, "load")){
 			bool success = load();
 			ready = success;
@@ -62,6 +60,7 @@ int main() {
 	printf("\n\n\n");
 	puts(welcomeMessage);
 
+	readFileP = stdin;
 	generateLocations();
 	generateNPCs();
 	createPlayer();
@@ -81,8 +80,8 @@ int main() {
 
 		strcpy(input, "look around\n");
 	} else {
-		getInput(input, 24, stdin);
+		getInput(input, 24);
 	}
-	while (parse(input, stdin) && getInput(input, 24, stdin));
+	while (parse(input, stdin) && getInput(input, 24));
 	finish();
 }

@@ -7,6 +7,7 @@
 #include "parser.h"
 
 extern int seed;
+FILE *readFileP;
 int inputPointer;
 
 void createNewSave() {
@@ -144,17 +145,17 @@ void saveInput(char* input) {
 }
 
 bool load() {
-	bool success, foundSave = false;
+	bool foundSave = false;
 
 	char saveName[5];
 	printf("\nEnter save name :\n>>> ");
 	fgets(saveName, 5, stdin);
 
-	char *line;
+	char *line = NULL;
 	size_t len = 24;
 	int i = 0;
-	FILE *savesP = fopen("saves.txt", "a+");
-	while (!foundSave && getline(&line, &len, savesP) != -1) {
+	FILE *readFileP = fopen("saves.txt", "a+");
+	while (!foundSave && getline(&line, &len, readFileP) != -1) {
 		if (!strcmp(line, saveName)) {
 			foundSave = true;
 			i += 2;
@@ -162,7 +163,6 @@ bool load() {
 		i++;
 	}
 	if (foundSave) {
-		success = true;
 		bool endOfSave = false;
 
 		printf("Loading save....\n");
@@ -170,16 +170,16 @@ bool load() {
 		system("clear");
 		printf("\n");
 
-		getline(&line, &len, savesP);
+		getline(&line, &len, readFileP);
 		seed = atoi(line);
 		srand(seed);
 		while (!endOfSave) {
-			getline(&line, &len, savesP);
+			getline(&line, &len, readFileP);
 			if (!strcmp(line, "\n")) {
 				endOfSave = true;
 			} else {
 				printf("\n>>> %s", line);
-				parse(line, savesP);
+				parse(line, readFileP);
 				i++;
 				printf("\n");
 			}
@@ -190,6 +190,7 @@ bool load() {
 		printf("Save name not found.\n");
 	}
 
-	fclose(savesP);
-	return success;
+	fclose(readFileP);
+	readFileP = stdin;
+	return foundSave;
 }

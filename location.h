@@ -3,15 +3,26 @@
 
 #include <stdbool.h>
 
+#define N 0
+#define E 1
+#define S 2
+#define W 3
+
 void generateLocations();
 void createPlayer();
-void lookAround();
-void go(char*);
-void interactDoor(char*, char*, FILE*);
-void inventory();
+bool lookAround();
+bool go();
+bool interactDoor();
+bool openDoor();
+bool closeDoor();
+bool lockDoor();
+bool unlockDoor();
+bool inventory();
 int *getObjsInLoc(bool);
 int *getNPCsInLoc(bool);
+struct Location *getPlayerLocation();
 extern struct Location *locs[];
+extern struct Location *currentLoc;
 extern struct NPC *player;
 extern int numLocs;
 extern int playerLocation;

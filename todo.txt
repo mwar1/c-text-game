@@ -1,10 +1,13 @@
-2. Infinite commands, possibly save each one as it comes in?
-3. Add extra stats for NPCs (buffs, dmg resist etc.)
-4. Improve passages (fake destinations etc.)
-5. Improve parser grammer, multiple words for objects (e.g. gold key, silver key)
-6. Save by storing commands (need to implement consistent randomness) (new branch)
+1. Load still very broke
+1. Clean up input for save name
+2. Containers e.g. boxes, coffins.... (child class of Location?)
+3. Clean up door functions
+4. Multiple words for objects (e.g. gold key, bronze coin...)
+5. Add extra stats for NPCs (buffs, dmg resist etc.)
+6. Improve passages (fake destinations etc.)
+7. AWK files or eq. for easier creation of NPCs, objs, locs etc. (new branch)
 
 Current commit:
-- Fixed inventory listing
-- Consistent randomness, and saved seed
-- Each command stored one-by-one, removing the limit on commands
+- Updated parsing system to match by pattern
+- Handles upper/lower case input
+- Global playerLocation variable
