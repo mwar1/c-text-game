@@ -55,10 +55,9 @@ bool listCommands(void) {
 }
 
 bool noMatch() {
-	char *input = *params;
-	int strLen;
-	for (strLen = 0; !isspace(input[strLen]) && input[strLen] != '\0'; input++);
-	if (strLen > 0) printf("I don't know how to '%.*s'.\n", strLen, input);
+	if (params[0][0] > 0) {
+		printf("I don't know how to '%s'.\n", params[0]);
+	}
 	return true;
 }
 
@@ -95,6 +94,11 @@ bool matchPattern(char *input, char *pattern) {
 		inpLength++;
 	}
 
+	if (!strcmp(pattern, "A")) {
+		params[0] = input;
+		return true;
+	}
+
 	strcpy(compPattern, pattern);
 	patWord = strtok(compPattern, " ");
 	while (patWord != NULL) {
@@ -103,6 +107,7 @@ bool matchPattern(char *input, char *pattern) {
 		patWord = strtok(NULL, " ");
 		patLength++;
 	}
+
 	if (inpLength != patLength) return false;
 
 	bool matching = true;
@@ -116,7 +121,7 @@ bool matchPattern(char *input, char *pattern) {
 	return matching;
 }
 
-bool parse (char *input, FILE *fp) {
+bool parse (char *input) {
 	COMMAND commands[] = {
 		{"quit", quit},
 		{"help", help},

@@ -1,37 +1,5 @@
-abc
-1635514404
+ppp
+1637011173
 look around
-go s
-take coin
-drop coin
-
-mjw
-1635514632
-look around
-open door
-north
-go s
-go s
-go s
-go e
-take bottle
-
-qwe
-1635514727
-look around
-go w
-go w
-go e
-
-pop
-1635514836
-look around
-take oscar
-eat oscar
-take key
-akk
-1635703289
-look around
-help
-commands
+cat sav	
 

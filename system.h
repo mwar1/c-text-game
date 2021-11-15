@@ -6,5 +6,6 @@ void saveInput(char*);
 bool load();
 
 extern FILE *readFileP;
+extern int inputPointer;
 
 #endif

@@ -11,7 +11,7 @@
 #include "npc.h"
 #include "parser.h"
 
-char input[24];
+char input[32];
 int seed;
 char welcomeMessage[] =
 "			░██╗░░░░░░░██╗███████╗██╗░░░░░░█████╗░░█████╗░███╗░░░███╗███████╗██╗\n"
@@ -38,7 +38,7 @@ bool getInitalInput() {
 	bool ready, newGame = false;
 	while (!ready) {
 		printf("\n>>> ");
-		fgets(input, 32, stdin);
+		fgets(input, 16, stdin);
 		input[strlen(input)-1] = '\0';
 
 		if (!strcmp(input, "help")) {
@@ -80,8 +80,8 @@ int main() {
 
 		strcpy(input, "look around\n");
 	} else {
-		getInput(input, 24);
+		getInput(input, 32);
 	}
-	while (parse(input, stdin) && getInput(input, 24));
+	while (parse(input) && getInput(input, 32));
 	finish();
 }

@@ -6,7 +6,7 @@
 #define MAX_PARAMETERS 10
 extern char *params[];
 
-bool parse(char*, FILE*);
+bool parse(char*);
 bool help();
 
 typedef struct COMMAND {

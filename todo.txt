@@ -1,13 +1,13 @@
-1. Load still very broke
-1. Clean up input for save name
-2. Containers e.g. boxes, coffins.... (child class of Location?)
-3. Clean up door functions
+1. Containers e.g. boxes, coffins.... (child class of Location?)
+2. Clean up door functions
+3. Unlimited length input i.e. no overflow
 4. Multiple words for objects (e.g. gold key, bronze coin...)
 5. Add extra stats for NPCs (buffs, dmg resist etc.)
 6. Improve passages (fake destinations etc.)
 7. AWK files or eq. for easier creation of NPCs, objs, locs etc. (new branch)
 
 Current commit:
-- Updated parsing system to match by pattern
-- Handles upper/lower case input
-- Global playerLocation variable
+- Fixed no match function
+- Parser tweaks
+- Fixed loading
+- Fixed buffer overflow for long input

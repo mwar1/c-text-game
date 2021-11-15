@@ -6,9 +6,14 @@
 
 bool getInput(char *input, size_t length) {
 	printf("\n>>> ");
-	fgets(input, length, readFileP);
-	if (readFileP != stdin) printf("%s", input);
+	if (readFileP == stdin) {
+		fgets(input, length, readFileP);
+		saveInput(input);
+	} else {
+		getline(&input, &length, readFileP);
+		inputPointer++;
+		printf("%s", input);
+	}
 
-	saveInput(input);
 	return true;
 }

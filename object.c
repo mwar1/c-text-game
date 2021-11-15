@@ -156,7 +156,7 @@ bool drop() {
 bool look() {
 	bool looked, lookedObj, lookedLoc, lookedNPC = false;
 
-	if (params[0] != NULL || !strcmp(params[0], "around\n")) {
+	if (params[0] == NULL || !strcmp(params[0], "around")) {
 		lookAround();
 		looked = true;
 	}

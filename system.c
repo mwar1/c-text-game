@@ -13,7 +13,7 @@ int inputPointer;
 void createNewSave() {
 	char saveName[4];
 	char yesOrNo[2];
-	char *line;
+	char *saveLine = NULL;
 	size_t len = 24;
 	int i, overwriteIndex;
 	bool foundName, overwrite = false;
@@ -28,12 +28,12 @@ void createNewSave() {
 		rewind(fp);
 		i = 0;
 		foundName = true;
-		while (getline(&line, &len, fp) != -1) {
-			if (!strcmp(line, "\n")) {
-				getline(&line, &len, fp);
+		while (getline(&saveLine, &len, fp) != -1) {
+			if (!strcmp(saveLine, "\n")) {
+				getline(&saveLine, &len, fp);
 				i++;
-				line[strcspn(line, "\n")] = 0;
-				if (!strcmp(line, saveName)) {
+				saveLine[strcspn(saveLine, "\n")] = 0;
+				if (!strcmp(saveLine, saveName)) {
 					foundName = false;
 					printf("\nName already exists, overwrite? (y/n)\n>>> ");
 					fgets(yesOrNo, 2, stdin);
@@ -99,9 +99,9 @@ void createNewSave() {
 	}
 	fp = fopen("saves.txt", "r");
 	i = 0;
-	while (getline(&line, &len, fp) != -1) {
-		line[strcspn(line, "\n")] = 0;
-		if (!strcmp(line, saveName)) {
+	while (getline(&saveLine, &len, fp) != -1) {
+		saveLine[strcspn(saveLine, "\n")] = 0;
+		if (!strcmp(saveLine, saveName)) {
 			break;
 		} else {
 			i++;
@@ -153,14 +153,14 @@ bool load() {
 
 	char *line = NULL;
 	size_t len = 24;
-	int i = 0;
-	FILE *readFileP = fopen("saves.txt", "a+");
+	inputPointer = 0;
+	readFileP = fopen("saves.txt", "a+");
 	while (!foundSave && getline(&line, &len, readFileP) != -1) {
 		if (!strcmp(line, saveName)) {
 			foundSave = true;
-			i += 2;
+			inputPointer += 2;
 		}
-		i++;
+		inputPointer++;
 	}
 	if (foundSave) {
 		bool endOfSave = false;
@@ -178,13 +178,12 @@ bool load() {
 			if (!strcmp(line, "\n")) {
 				endOfSave = true;
 			} else {
-				printf("\n>>> %s", line);
-				parse(line, readFileP);
-				i++;
+				printf(">>> %s", line);
+				parse(line);
+				inputPointer++;
 				printf("\n");
 			}
 		}
-		inputPointer = i;
 		printf("~~~\nGame succesfully loaded.\n~~~\n");
 	} else {
 		printf("Save name not found.\n");
