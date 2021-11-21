@@ -1,5 +1,6 @@
-1. Containers e.g. boxes, coffins.... (child class of Location?)
-2. Clean up door functions
+1. Reimplement use of getObjsinLoc... et al.
+2. Hidden? containers i.e. not obviously a container (e.g. golden egg which contains a message)
+2. Use global playerLocation to make functions simpler
 3. Unlimited length input i.e. no overflow
 4. Multiple words for objects (e.g. gold key, bronze coin...)
 5. Add extra stats for NPCs (buffs, dmg resist etc.)
@@ -7,7 +8,3 @@
 7. AWK files or eq. for easier creation of NPCs, objs, locs etc. (new branch)
 
 Current commit:
-- Fixed no match function
-- Parser tweaks
-- Fixed loading
-- Fixed buffer overflow for long input

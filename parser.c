@@ -13,6 +13,7 @@
 
 char *verb, *verbSyn, *noun, *nounSyn;
 char *params[MAX_PARAMETERS];
+char *otherWords[MAX_WORDS];
 
 bool health() {
 	printf("Health : %i\n", player->health);
@@ -35,21 +36,27 @@ bool help() {
 bool listCommands(void) {
 	char *allCommands =
 	"  *   look / look around             - provides a description of your current surroundings\n"
-	"  *   look <noun>                    - gives a description of <noun>\n"
+	"  *   look <item>                    - gives a description of <item>\n"
+	"  *   look in <container>            - lists the contents of the specified container\n"
 	"  *   go <direction>                 - moves in the direction specified (direction should be north, south, east or west)\n"
 	"  *   take <item>                    - pick up <item>\n"
-	"  *   drop <item>                    - drop <item>\n"
+	"  *   drop <item>                    - drops <item>\n"
 	"  *   inventory                      - list all objects currently in your inventory\n"
 	"  *   talk to <NPC>                  - start a conversation with <NPC>\n"
 	"  *   attack <NPC> (with <weapon>)   - starts a fight with <NPC>, using <weapon> if specified\n"
 	"  *   eat <item>                     - eat the specified <item>, causing you to gain (or lose) HP and effects\n"
-	"  *   open door                      - opens a door, provided it is unlocked first\n"
-	"  *   close door                     - closes a door\n"
-	"  *   unlock/lock door               - unlocks or locks the door, provided you have the correct key\n"
+	"  *   open <direction> door          - opens a door in the specified direction, provided it is unlocked first\n"
+	"  *   close <direction> door         - closes a door\n"
+	"  *   unlock/lock <direction> door   - unlocks or locks the door, provided you have the correct key\n"
+	"  *   open/close <container>         - opens or closes the specified container\n"
+	"  *   unlock/lock <container>        - unlocks or locks the door, provided you have the correct key\n"
+	"  *   put <item> in <container>      - puts the item into the specified container\n"
+	"  *   take <item> from <container>   - takes the item out of the container\n"
 	"  *   health                         - displays your current health points\n"
 	"  *   quit                           - quits the game\n";
 
 	printf("Possible commands:\n\n");
+	printf("size of commands = %li bytes.\n", strlen(allCommands));
 	puts(allCommands);
 	return true;
 }
@@ -66,7 +73,16 @@ void matchTerminal(char *input, char *pattern) {
 }
 
 bool matchWord(char *input, char *pattern) {
-	return !strcmp(input, pattern);
+	if (!strcmp(input, pattern)) {
+		for (int i=0; i<MAX_WORDS; i++) {
+			if (strlen(otherWords[i]) == 0) {
+				otherWords[i] = input;
+				break;
+			}
+		}
+		return true;
+	}
+	return false;
 }
 
 char splitInput[8][16], splitPattern[8][16];
@@ -74,6 +90,10 @@ bool matchPattern(char *input, char *pattern) {
 	// Empty the list of paramaters
 	for (int i=0; i<MAX_PARAMETERS; i++) {
 		params[i] = "";
+	}
+	// Empty the list of verbs
+	for (int i=0; i<MAX_WORDS; i++) {
+		otherWords[i] = "";
 	}
 	// Empty the lists of split inputs
 	for (int i=0; i<8; i++) {
@@ -127,7 +147,10 @@ bool parse (char *input) {
 		{"help", help},
 		{"commands", listCommands},
 		{"take A", take},
+		{"take A from B", take},
+		{"take A out of B", take},
 		{"pick up A", take},
+		{"pick up A from B", take},	
 		{"drop A", drop},
 		{"inventory", inventory},
 		{"talk to A", talk},
@@ -135,15 +158,21 @@ bool parse (char *input) {
 		{"fight A", playerAttack},
 		{"fight A with B", playerAttack},
 		{"eat A", eat},
-		{"open A B", openDoor},
-		{"close A B", closeDoor},
-		{"lock A B", lockDoor},
-		{"unlock A B", unlockDoor},
-		{"open B", openDoor},
-		{"close B", closeDoor},
-		{"lock B", lockDoor},
-		{"unlock B", unlockDoor},
+		{"put A in B", put},
+		{"put A B", put},
+		{"put A in", put},
+		{"put A", put},
+		{"put", put},
+		{"open A door", interactDoor},
+		{"close A door", interactDoor},
+		{"lock A door", interactDoor},
+		{"unlock A door", interactDoor},
+		{"open B", interactContainer},
+		{"close B", interactContainer},
+		{"lock B", interactContainer},
+		{"unlock B", interactContainer},
 		{"health", health},
+		{"look in A", lookIn},
 		{"look at A", look},
 		{"look A", look},
 		{"look", lookAround},

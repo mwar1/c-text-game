@@ -1,4 +1,4 @@
-locOrDoor / article / id / tag / description / {connections} / {directions} / locked / open / unlockedWith (if door)
+locOrDoorOrCont / article / id / tag / intro / description / {connections} / {directions} / locked / open / unlockedWith (if door)
 
 loc/a/castle/castle/a rugged castle towers over the surroundings/in a grand but run down castle/12/13/14/-1/n/w/s/x/0/0
 loc/a/bridge/bridge/a bridge sways in the breeze/on a rickety, old wooden bridge, swaying in the breeze/14/15/-1/-1/n/s/x/x/0/0

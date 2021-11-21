@@ -1,0 +1,3 @@
+article / id / tag / description / capacity / weight / locked / open / location->id / unlockedWith->id
+
+a/box1/box/small wooden box/50/10/1/0/castle/key1

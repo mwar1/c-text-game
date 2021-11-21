@@ -8,18 +8,16 @@ void createPlayer();
 bool lookAround();
 bool go();
 bool interactDoor();
-bool openDoor();
-bool closeDoor();
-bool lockDoor();
-bool unlockDoor();
 bool inventory();
 int *getObjsInLoc(bool);
 int *getNPCsInLoc(bool);
 struct Location *getPlayerLocation();
 extern struct Location *locs[];
+extern struct Container *containers[];
 extern struct Location *currentLoc;
 extern struct NPC *player;
 extern int numLocs;
+extern int numContainers;
 extern int playerLocation;
 
 typedef struct Location {
